@@ -22,6 +22,7 @@ export const iconsByIndex = [
   "https://cdn-icons-png.flaticon.com/128/8574/8574963.png",
   "https://cdn-icons-png.flaticon.com/128/735/735742.png",
   "https://cdn-icons-png.flaticon.com/128/3174/3174457.png",
+  "https://cdn-icons-png.flaticon.com/128/1539/1539338.png",
 ];
 
 // async function fetchMenuItems() {
@@ -106,4 +107,3 @@ export const catalog = [
   },
 ];
 
-export const whatsAppNumber = "917043102357";

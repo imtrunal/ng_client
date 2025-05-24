@@ -3,7 +3,7 @@ import 'swiper/css';
 import './swiper.css'
 import { Autoplay } from 'swiper/modules';
 
-const Slider = ({ images }) => {
+const ImageSlider = ({ images }) => {
     return (
         (images ?
             <Swiper
@@ -31,4 +31,5 @@ const Slider = ({ images }) => {
     );
 };
 
-export default Slider;
+
+export default ImageSlider;

@@ -51,16 +51,31 @@
 
 import { FaSquareInstagram } from "react-icons/fa6";
 import { IoLogoWhatsapp } from "react-icons/io";
-import { whatsAppNumber } from "../../utils/data";
 import { useMenu } from "../common/MenuProvider";
+import { useNavigate } from "react-router-dom";
+import { ENV_VAR } from "../../utils/envVariables";
 
 const Footer = () => {
     const menuItems = useMenu();
+    const navigate = useNavigate();
 
+    const scrollToTop = () => {
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+        });
+    }
+
+    const handleNavigate = (route) => {
+        if (route) {
+            navigate(`/catalog${route}`);
+        }
+        scrollToTop();
+    };
     return (
         <footer className="bg-DarkBlue text-white py-3 px-5 sm:px-10 md:px-20 mt-5">
             <div className="flex flex-wrap justify-between max-w-7xl mx-auto mt-10 gap-y-6">
-                <div className="m-5">
+                <div className="m-5 w-full flex justify-center md:block md:w-auto">
                     <img src="/assets/images/Logo 1.png" className="w-48" alt="" />
                 </div>
 
@@ -71,7 +86,10 @@ const Footer = () => {
                             .find(item => item.name === "Graphics")
                             ?.subcategories.map(sub => (
                                 <li key={sub.route} className="cursor-pointer text-base/7 hover:text-Orange">
-                                    <a href={`/catalog/graphics?${sub.route}`}>{sub.title}</a>
+                                    <a
+                                        onClick={() => handleNavigate(`/graphics/${sub.route}`)}                                    >
+                                        {sub.title}
+                                    </a>
                                 </li>
                             ))}
                     </ul>
@@ -84,7 +102,7 @@ const Footer = () => {
                             .find(item => item.name === "Gifting")
                             ?.subcategories.map(sub => (
                                 <li key={sub.route} className="cursor-pointer text-base/7 hover:text-Orange">
-                                    <a href={`/catalog/gifting?${sub.route}`}>{sub.title}</a>
+                                    <a onClick={() => handleNavigate(`/gifting/${sub.route}`)}>{sub.title}</a>
                                 </li>
                             ))}
                     </ul>
@@ -97,7 +115,7 @@ const Footer = () => {
                             .find(item => item.name === "Digital")
                             ?.subcategories.map(sub => (
                                 <li key={sub.route} className="cursor-pointer text-base/7 hover:text-Orange">
-                                    <a href={`/catalog/digital?${sub.route}`}>{sub.title}</a>
+                                    <a onClick={() => handleNavigate(`/digital/${sub.route}`)}>{sub.title}</a>
                                 </li>
                             ))
                         }
@@ -115,10 +133,10 @@ const Footer = () => {
                 </div>
 
                 <div className="flex gap-2 ">
-                    <a href={`https://api.whatsapp.com/send?phone=${whatsAppNumber}}&text=Hello`} target="_blank" className="bg-white rounded-md p-1.5 text-Orange hover:scale-110 transition">
+                    <a href={`https://wa.me/${ENV_VAR.whatsappNumber}`} target="_blank" className="bg-white rounded-md p-1.5 text-Orange hover:scale-110 transition">
                         <IoLogoWhatsapp size={20} />
                     </a>
-                    <a href="#" className="bg-white rounded-md p-1.5 text-Orange hover:scale-110 transition">
+                    <a href="https://www.instagram.com/nirmanamgraphics/" target="_blank" className="bg-white rounded-md p-1.5 text-Orange hover:scale-110 transition">
                         <FaSquareInstagram size={20} />
                     </a>
                 </div>

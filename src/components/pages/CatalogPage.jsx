@@ -11,20 +11,56 @@ import { FaFilePdf } from "react-icons/fa";
 import { FaFacebook, FaTwitter, FaLinkedin, FaWhatsapp } from 'react-icons/fa';
 import { catalog } from '../../utils/data';
 import PdfPreview from './PreviewPDFPage';
+import { Skeleton } from "@heroui/react";
+import { Slider } from "@heroui/react";
+import HoverSwiper from './../common/Slider2';
+import HoverVideo from '../common/HoverVideo';
+import { MdOutlineOndemandVideo, MdSupportAgent } from "react-icons/md";
+import { FiDownload } from "react-icons/fi";
+
+const sha = [
+  "Rectangle",
+  "Square",
+  "Circle",
+  "Oval",
+  "Triangle",
+  "Custom Shape"
+];
+
+const COLOR_OPTIONS = [
+  "Red",
+  "Blue",
+  "Green",
+  "Yellow",
+  "Black",
+  "White",
+  "Silver",
+  "Gold",
+  "Custom Color"
+];
 
 const CatalogPage = () => {
   const location = useLocation();
   const [productData, setProductData] = useState({});
   const [categories, setCategories] = useState([]);
   const [activeMainCategory, setActiveMainCategory] = useState("");
-  const [activeCategory, setActiveCategory] = useState("");
+  const [activeSubCategory, setActiveCategory] = useState("");
   const [filteredItems, setFilteredItems] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [showFilters, setShowFilters] = useState(false);
-  const [priceFilter, setPriceFilter] = useState('all');
+  const [priceFilter, setPriceFilter] = useState({ min: 0, max: 10000 });
   const [materialFilter, setMaterialFilter] = useState('all');
   const [sortOption, setSortOption] = useState('featured');
   const [showSort, setShowSort] = useState(false);
+  const [shapeFilter, setShapeFilter] = useState('all');
+  const [colorFilter, setColorFilter] = useState('all');
+  const [moqFilter, setMoqFilter] = useState('all');
+  const [formatFilter, setFormatFilter] = useState('all');
+  const [priceRange, setPriceRange] = useState([0, 10000]);
+  const [initialMaxPrice, setInitialMaxPrice] = useState(10000);
+  const [searchParam, setSearchParam] = useState('');
+  const [colorOptions, setColorOptions] = useState([]);
+  const [shapeOptions, setShapeOptions] = useState([]);
 
   // Fetch categories and products data
   const fetchData = async () => {
@@ -36,6 +72,22 @@ const CatalogPage = () => {
       // Fetch products
       const productsResponse = await axios.get(`${ENV_VAR.API_URL}/products/list`);
       setProductData(productsResponse.data.catalogData || {});
+
+      //fecth color options
+      const colorOptionsResponse = await axios.get(`${ENV_VAR.API_URL}/colors/`);
+      setColorOptions(colorOptionsResponse.data);
+
+      //fecth shape options
+      const shapeOptionsResponse = await axios.get(`${ENV_VAR.API_URL}/shapes/`);
+      setShapeOptions(shapeOptionsResponse.data);
+
+      // Calculate max price from products
+      const allProducts = Object.values(productsResponse.data.catalogData || {})
+        .flatMap(mainCat => Object.values(mainCat).flat());
+      const maxPrice = allProducts.reduce((max, item) => Math.max(max, item.price || 0), 0);
+      setPriceRange([0, Math.ceil(maxPrice / 1000) * 1000 || 10000]);
+      setInitialMaxPrice(Math.ceil(maxPrice / 1000) * 1000 || 10000);
+      setPriceFilter({ min: 0, max: Math.ceil(maxPrice / 1000) * 1000 || 10000 });
     } catch (error) {
       console.log(error);
       toast.error("SERVER ERROR");
@@ -51,6 +103,10 @@ const CatalogPage = () => {
     const pathParts = location.pathname.split('/');
     const currentMainCategory = pathParts[2];
     const currentSubCategory = pathParts[3];
+    const queryParams = new URLSearchParams(location.search);
+    const searchId = queryParams.get('id');
+    console.log(searchId);
+    setSearchParam(searchId);
 
     if (currentMainCategory) setActiveMainCategory(currentMainCategory);
     if (currentSubCategory) setActiveCategory(currentSubCategory);
@@ -68,15 +124,22 @@ const CatalogPage = () => {
       if (mainCategory) {
         const mainCategoryId = mainCategory._id;
 
-        if (activeCategory) {
+        if (activeSubCategory) {
           // Find the subcategory ID from the categories data
           const subCategory = mainCategory.subcategories.find(sub =>
-            sub.name.toLowerCase().replace(/\s+/g, '-') === activeCategory.toLowerCase()
+            sub.name.toLowerCase().replace(/\s+/g, '-') === activeSubCategory.toLowerCase()
           );
 
           if (subCategory) {
             const subCategoryId = subCategory._id;
             items = productData[mainCategoryId]?.[subCategoryId] || [];
+            if (searchParam) {
+              console.log("Search Param:", searchParam);
+
+              items = items.filter(item =>
+                item.title.toLowerCase().includes(searchParam.toLowerCase())
+              );
+            }
           }
         } else {
           // Get all products for the main category
@@ -93,17 +156,15 @@ const CatalogPage = () => {
       );
     }
 
-    if (priceFilter !== 'all') {
-      const [min, max] = priceFilter.split('-').map(Number);
-      items = items.filter(item => {
-        if (max) {
-          return item.price >= min && item.price <= max;
-        }
-        return item.price >= min;
-      });
-    }
+    items = items.filter(item => {
+      return item.price >= priceFilter.min && item.price <= priceFilter.max;
+    });
 
-    if (materialFilter !== 'all') {
+    // Apply material filter for specific categories
+    if (materialFilter !== 'all' &&
+      ((activeMainCategory === 'graphics' &&
+        (activeSubCategory === 'wedding-cards' || activeSubCategory === 'invitation-card')) ||
+        (activeMainCategory === 'gifting'))) {
       items = items.filter(item =>
         (item.material || item.type) &&
         (item.material?.toLowerCase().includes(materialFilter.toLowerCase()) ||
@@ -111,9 +172,54 @@ const CatalogPage = () => {
       );
     }
 
+    // Apply shape filter for Graphics > Wedding/Invitation cards and Gifting
+    if (shapeFilter !== 'all' &&
+      ((activeMainCategory === 'graphics' &&
+        (activeSubCategory === 'wedding-cards' || activeSubCategory === 'invitation-card')) ||
+        (activeMainCategory === 'gifting'))) {
+      items = items.filter(item =>
+        item.shape?.toLowerCase() === shapeFilter.toLowerCase()
+      );
+    }
+
+    // Apply color filter for Graphics > Wedding/Invitation cards
+    if (colorFilter !== 'all' &&
+      activeMainCategory === 'graphics' &&
+      (activeSubCategory === 'wedding-cards' || activeSubCategory === 'invitation-card')) {
+      items = items.filter(item =>
+        item.color?.toLowerCase() === colorFilter.toLowerCase()
+      );
+    }
+
+    // Apply MOQ filter for Graphics and Gifting categories
+    if ((activeMainCategory === 'graphics' || activeMainCategory === 'gifting') && moqFilter !== 'all') {
+      const [min, max] = moqFilter.includes('+')
+        ? [parseInt(moqFilter), Infinity]
+        : moqFilter.split('-').map(Number);
+
+      items = items.filter(item => {
+        if (max === Infinity) {
+          return item.moq >= min;
+        }
+        return item.moq >= min && item.moq <= max;
+      });
+    }
+
+    // Apply format filter for Digital category
+    if (activeMainCategory === 'digital' && formatFilter !== 'all') {
+      items = items.filter(item => {
+        if (formatFilter === 'pdf') {
+          return item.pdf;
+        } else if (formatFilter === 'video') {
+          return item.video;
+        }
+        return true;
+      });
+    }
+
     items = sortItems(items, sortOption);
     setFilteredItems(items);
-  }, [productData, categories, activeMainCategory, activeCategory, searchTerm, priceFilter, materialFilter, sortOption]);
+  }, [productData, categories, activeMainCategory, activeSubCategory, searchTerm, priceFilter, materialFilter, sortOption, shapeFilter, colorFilter, moqFilter, formatFilter]);
 
   const sortItems = (items, option) => {
     const sortedItems = [...items];
@@ -137,97 +243,136 @@ const CatalogPage = () => {
 
     if (!mainCategory) return activeMainCategory;
 
-    if (!activeCategory) return mainCategory.name;
+    if (!activeSubCategory) return mainCategory.name;
 
     const subCategory = mainCategory.subcategories.find(sub =>
-      sub.name.toLowerCase().replace(/\s+/g, '-') === activeCategory.toLowerCase()
+      sub.name.toLowerCase().replace(/\s+/g, '-') === activeSubCategory.toLowerCase()
     );
 
-    return subCategory ? subCategory.name : activeCategory;
+    return subCategory ? subCategory.name : activeSubCategory;
   };
 
   const getAvailableMaterials = () => {
     const materials = new Set();
     let items = [];
+    console.log(productData);
 
     if (activeMainCategory) {
       const mainCategory = categories.find(cat =>
         cat.name.toLowerCase() === activeMainCategory.toLowerCase()
       );
-
+      console.log(mainCategory);
       if (mainCategory) {
-        const mainCategoryId = mainCategory._id;
 
-        if (activeCategory) {
+        const categoryProducts = productData[mainCategory._id] || {};
+
+        if (activeSubCategory) {
           const subCategory = mainCategory.subcategories.find(sub =>
-            sub.name.toLowerCase().replace(/\s+/g, '') === activeCategory.toLowerCase()
+            // Remove the replace() for more accurate matching
+            sub.name.toLowerCase().replace(/\s+/g, '-') === activeSubCategory.toLowerCase()
           );
 
           if (subCategory) {
             const subCategoryId = subCategory._id;
-            items = productData[mainCategoryId]?.[subCategoryId] || [];
+            items = categoryProducts[subCategoryId] || [];
           }
         } else {
-          const mainCategoryProducts = productData[mainCategoryId] || {};
-          items = Object.values(mainCategoryProducts).flat();
+          // Get all items from all subcategories in this main category
+          items = Object.values(categoryProducts).flat();
         }
       }
     }
+    console.log(items);
 
     items.forEach(item => {
-      if (item.material) {
+      // Only add non-empty materials
+      if (item.material && item.material.trim() !== "") {
         materials.add(item.material);
       }
+      // Only add non-empty types
+      if (item.type && item.type.trim() !== "") {
+        materials.add(item.type);
+      }
     });
+    console.log("Available Materials:", materials);
 
     return Array.from(materials);
   };
 
   const resetFilters = () => {
-    setPriceFilter('all');
+    setPriceFilter({ min: 0, max: initialMaxPrice });
+    setPriceRange([0, initialMaxPrice]);
     setMaterialFilter('all');
     setSearchTerm('');
     setSortOption('featured');
+    setShapeFilter('all');
+    setColorFilter('all');
+    setMoqFilter('all');
+    setFormatFilter('all');
   };
 
-
-  const ShareButton = ({ itemId }) => {
-    const [isOpen, setIsOpen] = useState(false);
-    const [isCopied, setIsCopied] = useState(false);
-
-    // Construct the shareable link
-    const API_URL = window.location.origin; // Gets current origin (http://192.168.1.11:5173)
-    const shareLink = `${API_URL}/catalog/graphics/${itemId}`;
+  const handlePriceApply = () => {
+    setPriceFilter({
+      min: priceRange[0],
+      max: priceRange[1]
+    });
+    setShowFilters(false);
   }
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(shareLink);
-    setIsCopied(true);
-    setTimeout(() => setIsCopied(false), 2000);
-  };
 
-  const shareOnSocial = (platform) => {
-    let url = '';
-    const encodedLink = encodeURIComponent(shareLink);
-
-    switch (platform) {
-      case 'facebook':
-        url = `https://www.facebook.com/sharer/sharer.php?u=${encodedLink}`;
-        break;
-      case 'twitter':
-        url = `https://twitter.com/intent/tweet?url=${encodedLink}`;
-        break;
-      case 'linkedin':
-        url = `https://www.linkedin.com/shareArticle?mini=true&url=${encodedLink}`;
-        break;
-      case 'whatsapp':
-        url = `https://wa.me/?text=${encodedLink}`;
-        break;
-      default:
-        return;
+  const handleNavigate = (shortId) => {
+    if (shortId) {
+      window.open(`/view?pdf=${shortId}`, "_blank");
     }
-
-    window.open(url, '_blank', 'width=600,height=400');
   };
+
+  const handleShare = (product, isInquiry) => {
+    const phoneNumber = ENV_VAR.whatsappNumber;
+    const subCategory = product.subCategory.name.toLowerCase().replace(/\s+/g, '-');
+    const productUrl = `http://192.168.1.7:5173/catalog/${activeMainCategory}/${subCategory}?id=${product.title}`;
+
+    const message = isInquiry ?
+      `Hello 👋,
+
+I am interested in this product and would like to inquire further. 🔍
+
+📂 *Category:* ${product.category.name}  
+📂 *Sub-Category:* ${product.subCategory.name}
+🔖 *Product ID:* ${product.title}
+
+🔗 *Product Link:* ${productUrl}
+
+
+Thank you for your time. I look forward to your response. 🙏`
+      :
+      `Hello 👋,
+
+I'm excited to share a product from *Nirmanam Graphics* that you might like! 🎨✨
+
+*${product.category.name} ${product.subCategory.name}* 📌
+
+🔗 *Product Link:* 
+${productUrl} 
+
+Check out our catalog for more amazing products! 🛍️
+
+http://192.168.1.7:5173/catalog/${activeMainCategory}/${subCategory}/`;
+
+
+    const isMobile = /iPhone|Android/i.test(navigator.userAgent);
+    if (isInquiry) {
+      const url = isMobile
+        ? `whatsapp://send?phone=${phoneNumber}&text=${encodeURIComponent(message)}`
+        : `https://web.whatsapp.com/send?phone=${phoneNumber}&text=${encodeURIComponent(message)}`;
+      window.open(url, '_blank');
+    }
+    else {
+      const url = isMobile
+        ? `whatsapp://send?text=${encodeURIComponent(message)}`
+        : `https://web.whatsapp.com/send?text=${encodeURIComponent(message)}`;
+      window.open(url, '_blank');
+    }
+  };
+
 
   return (
     activeMainCategory ? (
@@ -257,47 +402,129 @@ const CatalogPage = () => {
                     Filters
                   </button>
                 </PopoverTrigger>
-                <PopoverContent className="min-w-[450px] p-5">
+                <PopoverContent className="min-w-[450px]">
                   {showFilters && (
-                    <div className="w-full">
-                      <div className="flex gap-2">
-                        <div className="w-full">
-                          <h5 className="mb-2 text-sm font-medium">Price Range</h5>
-                          <select
-                            value={priceFilter}
-                            onChange={(e) => setPriceFilter(e.target.value)}
-                            className="p-2 border border-gray-300 rounded w-full"
+                    <div className="w-full px-4">
+                      <div className="w-full rounded-xl  bg-white p-2 flex flex-col gap-4">
+                        {/* Price Filter - full width */}
+                        <div className='flex gap-2'>
+                          <Slider
+                            className="w-full"
+                            defaultValue={[100, 500]}
+                            formatOptions={{ style: "currency", currency: "inr" }}
+                            label="Price Range"
+                            maxValue={1000}
+                            minValue={1}
+                            step={1}
+                            onChange={(value) => setPriceRange(value)}
+                          />
+                          <button
+                            onClick={handlePriceApply}
+                            className="mt-3 w-fit bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-colors text-sm font-medium"
                           >
-                            <option value="all">All Prices</option>
-                            <option value="0-500">Under ₹500</option>
-                            <option value="500-1000">₹500 - ₹1000</option>
-                            <option value="1000-2000">₹1000 - ₹2000</option>
-                            <option value="2000-">Above ₹2000</option>
-                          </select>
+                            Apply
+                          </button>
                         </div>
 
-                        {getAvailableMaterials().length > 0 && (
-                          <div className="w-full">
-                            <h5 className="mb-2 text-sm font-medium">Material</h5>
+                        {/* Filters Grid (2 columns) */}
+                        <div className="grid grid-cols-2 gap-4 w-full">
+                          {/* MOQ Filter */}
+                          {(activeMainCategory === 'graphics' || activeMainCategory === 'gifting') && (
+                            <div>
+                              <h5 className="mb-2 text-sm font-medium">MOQ</h5>
+                              <select
+                                value={moqFilter}
+                                onChange={(e) => setMoqFilter(e.target.value)}
+                                className="w-full p-2 border border-gray-300 rounded"
+                              >
+                                <option value="all">Any MOQ</option>
+                                <option value="1-10">1-10</option>
+                                <option value="10-50">10-50</option>
+                                <option value="50-100">50-100</option>
+                                <option value="100+">100+</option>
+                              </select>
+                            </div>
+                          )}
+
+                          {/* Material Filter */}
+                          {((activeMainCategory === 'graphics' && ['wedding-cards', 'invitation-card'].includes(activeSubCategory)) || activeMainCategory === 'gifting') && (
+                            <div>
+                              <h5 className="mb-2 text-sm font-medium">Material</h5>
+                              <select
+                                value={materialFilter}
+                                onChange={(e) => setMaterialFilter(e.target.value)}
+                                className="w-full p-2 border border-gray-300 rounded"
+                              >
+                                <option value="all">All Materials</option>
+                                {getAvailableMaterials().map(material => (
+                                  <option key={material} value={material}>{material}</option>
+                                ))}
+                              </select>
+                            </div>
+                          )}
+
+                          {/* Shape Filter */}
+                          {((activeMainCategory === 'graphics' && ['wedding-cards', 'invitation-card'].includes(activeSubCategory)) || activeMainCategory === 'gifting') && (
+                            <div>
+                              <h5 className="mb-2 text-sm font-medium">Shape</h5>
+                              <select
+                                value={shapeFilter}
+                                onChange={(e) => setShapeFilter(e.target.value)}
+                                className="w-full p-2 border border-gray-300 rounded"
+                              >
+                                <option value="all">All Shapes</option>
+                                {shapeOptions.map(shape => (
+                                  <option key={shape._id} value={shape.name.toLowerCase()}>{shape.name}</option>
+                                ))}
+                              </select>
+                            </div>
+                          )}
+
+                          {/* Color Filter */}
+                          {(activeMainCategory === 'graphics' && ['wedding-cards', 'invitation-card'].includes(activeSubCategory)) && (
+                            <div>
+                              <h5 className="mb-2 text-sm font-medium">Color</h5>
+                              <select
+                                value={colorFilter}
+                                onChange={(e) => setColorFilter(e.target.value)}
+                                className="w-full p-2 border border-gray-300 rounded"
+                              >
+                                <option value="all">All Colors</option>
+                                {colorOptions.map(color => (
+                                  <option key={color._id} value={color.name.toLowerCase()}>{color.name}</option>
+                                ))}
+                              </select>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Digital Format Filter */}
+                        {activeMainCategory === 'digital' && (
+                          <div>
+                            <h5 className="mb-2 text-sm font-medium">Type</h5>
                             <select
-                              value={materialFilter}
-                              onChange={(e) => setMaterialFilter(e.target.value)}
+                              value={formatFilter}
+                              onChange={(e) => {
+                                setFormatFilter(e.target.value)
+                                // setShowFilters(false) // Uncomment if you want to close the filter popover after selecting format
+                              }}
                               className="w-full p-2 border border-gray-300 rounded"
                             >
-                              <option value="all">All Materials</option>
-                              {getAvailableMaterials().map(material => (
-                                <option key={material} value={material}>{material}</option>
-                              ))}
+                              <option value="all">All Type</option>
+                              <option value="pdf">PDF</option>
+                              <option value="video">Video</option>
                             </select>
                           </div>
                         )}
                       </div>
                     </div>
+
                   )}
                 </PopoverContent>
               </Popover>
               {
-                (priceFilter !== 'all' || materialFilter !== 'all' || searchTerm) && (
+                (priceFilter.min !== 0 || priceFilter.max !== initialMaxPrice || materialFilter !== 'all' || searchTerm ||
+                  shapeFilter !== 'all' || colorFilter !== 'all' || moqFilter !== 'all' || formatFilter !== 'all') && (
                   <p
                     onClick={resetFilters}
                     className="text-red-500 cursor-pointer flex justify-center items-center font-bold"
@@ -339,43 +566,126 @@ const CatalogPage = () => {
           {/* Products Grid */}
           <div>
             {filteredItems.length > 0 ? (
-              <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-5 gap-4 space-y-4">
+              <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-5  space-y-4">
                 {filteredItems.map(item => (
                   <div
-                    key={item.id}
+                    key={item._id}
                     className="group break-inside-avoid border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow bg-white cursor-pointer"
                   >
-                    <div className="relative">
-                      {item.image ? (
-                        <img
-                          src={item.image}
-                          alt={item.title}
-                          className="w-full object-cover"
-                        />
-                      ) :
-                        // <PdfPreview pdfUrl={item.pdf} />
-                        <div className='w-full flex justify-center border-b-1'>
-                          {/* <FaFilePdf color='#F18B35' size={150} /> */}
+                    <div className="relative" onContextMenu={(e) => e.preventDefault()}>
+                      {item.image?.length > 0 ? (
+                        <div className="w-full relative">
+                          <HoverSwiper slides={item.image.map(img => img.url)} />
+                        </div>
+                      ) : item.pdf ? (
+                        <div className="w-full flex justify-center border-b-1" onClick={() => handleNavigate(item.pdf.short)}>
                           <PdfPreview
-                            pdfUrl={item.pdf}
+                            pdfUrl={item.pdf.url}
                             hoverInterval={1000}
                           />
                         </div>
-                      }
+                      ) : item.video ? (
+                        <div className="w-full relative group"
+                          onClick={() => window.open(item.video.url, "_blank")}
+                        >
 
-                      <div className="absolute top-2 left-2 bg-black/70 text-white px-2 py-0.5 rounded text-sm font-bold">
+                          {/* Video Component */}
+                          <HoverVideo
+                            videoUrl={item.video.url}
+                            posterUrl={'https://invitoai.com/zcollection/1064.png'}
+                          />
+                        </div>
+
+                      ) : (
+                        <div className="text-center text-gray-500 p-4">
+                          No media available
+                        </div>
+                      )}
+
+                      <div className="absolute top-2 left-2 bg-black/70 text-white px-2 py-0.5 rounded text-sm font-bold z-10">
                         ₹{item.price}
                       </div>
-                      <div>
+
+                      <div className="absolute top-2 right-2 flex gap-2 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity duration-400">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleShare(item, false);
+                          }}
+                          className="shadow-lg p-2 bg-black/70 text-white hover:bg-black/80 rounded-full z-10"
+                          title="Share"
+                        >
+                          <FiShare2 size={16} />
+                        </button>
+                        {(item.pdf || item.video) && (
+                          <button
+                            onClick={async (e) => {
+                              e.stopPropagation();
+                              if (item.pdf) {
+                                try {
+                                  // Add quality parameter for PDF (if supported by your backend)
+                                  const response = await fetch(`${item.pdf.url}?fl_attachment&quality=auto`);
+                                  const blob = await response.blob();
+                                  const url = window.URL.createObjectURL(blob);
+                                  const link = document.createElement('a');
+                                  link.href = url;
+                                  link.download = `${item.title.replace(/[^a-z0-9]/gi, '_')}.pdf`;
+                                  link.style.display = 'none';
+                                  document.body.appendChild(link);
+                                  link.click();
+                                  window.URL.revokeObjectURL(url);
+                                  document.body.removeChild(link);
+                                  toast.success(`PDF download started`);
+                                } catch (error) {
+                                  toast.error('Failed to download PDF');
+                                  console.error('Download error:', error);
+                                }
+                              }
+                              else if (item.video) {
+                                try {
+                                  const response = await fetch(`${item.video.url}?fl_attachment`);
+                                  const blob = await response.blob();
+                                  const url = window.URL.createObjectURL(blob);
+                                  const link = document.createElement('a');
+                                  link.href = url;
+                                  link.download = `${item.title.replace(/[^a-z0-9]/gi, '_')}.mp4` || 'download.mp4';
+                                  link.style.display = 'none';
+                                  document.body.appendChild(link);
+                                  link.click();
+                                  window.URL.revokeObjectURL(url);
+                                  document.body.removeChild(link);
+                                  toast.success(`Video download started`);
+                                } catch (error) {
+                                  toast.error('Failed to download video');
+                                  console.error('Download error:', error);
+                                }
+                              }
+                            }}
+                            className="shadow-lg p-2 bg-black/70 text-white hover:bg-black/80 rounded-full z-10"
+                            title="Download"
+                          >
+                            <FiDownload size={16} />
+                          </button>
+                        )}
+
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleShare(item, true);
+                          }}
+                          className="shadow-lg p-2 bg-black/70 text-white hover:bg-black/80 rounded-full z-10"
+                          title="Inquiry"
+                        >
+                          <MdSupportAgent size={16} />
+                        </button>
+
+
                       </div>
-                      <button
-                        className="shadow-lg absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-400 p-2 bg-gray-100 hover:bg-gray-200 rounded-full" title="Share">
-                        <FiShare2 size={16} />
-                      </button>
+
                     </div>
 
                     <div className="p-3">
-                      <h3 className="text-sm font-medium mb-1">{item.title}</h3>
+                      <h3 className="text-sm font-medium mb-1 truncate w-48" title={item.title}>{item.title}</h3>
                       {item.size && <p className="text-xs text-gray-600">Size: {item.size}</p>}
                       {item.material && <p className="text-xs text-gray-600">Material: {item.material}</p>}
                       {item.type && <p className="text-xs text-gray-600">Type: {item.type}</p>}
@@ -390,7 +700,7 @@ const CatalogPage = () => {
                 <p className="text-gray-600">Try adjusting your search or filter criteria</p>
                 <button
                   onClick={resetFilters}
-                  className="mt-4 px-4 py-2 bg-Darkborder-DarkBlue text-white rounded cursor-pointer"
+                  className="mt-4 px-4 py-2 bg-Darkborder-DarkBlue text-gray-400 rounded cursor-pointer"
                 >
                   Reset All Filters
                 </button>
@@ -398,7 +708,7 @@ const CatalogPage = () => {
             )}
           </div>
         </div>
-      </div>
+      </div >
     ) : (
       <div className="py-10 text-gray-800 px-[8%] mt-3">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">

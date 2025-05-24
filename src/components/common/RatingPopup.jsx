@@ -46,35 +46,9 @@ const RatingPopup = () => {
     return (
         <>
             {showPopup && (
-                <>
-                    <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center z-50">
-                        <code>X</code>
-                        <Review />
-                    </div>
-                </>
-                // <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center z-50">
-                //     <div className="bg-white p-6 rounded shadow-lg w-80 text-center">
-                //         <h2 className="text-lg font-semibold mb-4">Rate our product</h2>
-                //         <p className="mb-4">We’d love to hear your feedback!</p>
-                //         <div className="flex justify-center space-x-2 mb-4">
-                //             {[1, 2, 3, 4, 5].map((star) => (
-                //                 <button
-                //                     key={star}
-                //                     onClick={handleRating}
-                //                     className="text-yellow-500 text-xl"
-                //                 >
-                //                     ★
-                //                 </button>
-                //             ))}
-                //         </div>
-                //         <button
-                //             onClick={handleClose}
-                //             className="text-sm text-gray-600 underline"
-                //         >
-                //             Maybe later
-                //         </button>
-                //     </div>
-                // </div>
+                <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center z-[100]">
+                    <Review close={handleClose} rated={handleRating} />
+                </div>
             )}
         </>
     );

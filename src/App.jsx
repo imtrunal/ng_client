@@ -10,23 +10,30 @@ import Header from './components/common/Header';
 import CatalogPage from './components/pages/CatalogPage';
 import RatingPopup from './components/common/RatingPopup';
 import PDFUploadPreview from './components/pages/PreviewPDFPage';
+import PdfViewer from './components/PDFView';
+import LetsTalk from './components/pages/LetsTalk';
 
 function App() {
 
   const location = useLocation();
   const isLandingPage = location.pathname === "/";
+  const isPDFViewPage = location.pathname === "/view";
 
   return (
     <>
       {/* <PDFUploadPreview /> */}
+      {/* <RatingPopup /> */}
       <Toaster richColors duration={1500} position='top-right' />
-      {!isLandingPage && <Header />}
+      {!isLandingPage && !isPDFViewPage && <Header />}
 
       <Routes>
         <Route path="/" element={<SplashScreen />} />
         <Route path="/home" element={<Home />} />
         <Route path="/eklg-converter" element={<EKLGPage />} />
         <Route path="/catalog/*" element={<CatalogPage />} />
+        <Route path="/view" element={<PdfViewer />} />
+        <Route path="/lets-talk" element={<LetsTalk />} />
+
       </Routes>
       {!isLandingPage && <Footer />}
     </>

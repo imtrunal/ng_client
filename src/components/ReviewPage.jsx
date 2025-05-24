@@ -4,8 +4,9 @@ import { FaStar } from "react-icons/fa";
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { motion } from 'framer-motion';
 import { prompt } from "../utils/Prompt";
+import { MdClose } from "react-icons/md";
 
-const Review = () => {
+const Review = ({ close, rated }) => {
     const [rating, setRating] = useState(0);
     const [review, setReview] = useState("");
     const [loading, setLoading] = useState(false);
@@ -51,13 +52,15 @@ const Review = () => {
                 window.open(googleReviewLink, "_blank");
             }, 1500);
         }, 1000);
+        rated();
     };
 
     const generateReview = async () => {
         setLoading(true);
+        if (rating === 0) return;
         try {
             const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-            const result = await model.generateContent(prompt(rating));
+            const result = await model.generateContent(prompt(rating < 3 ? 3 : rating));
             const response = result.response;
             const text = response.text();
             setReview(text);
@@ -72,7 +75,11 @@ const Review = () => {
 
     return (
         // <div className="w-full bg-[#1B3A54] flex min-h-max justify-center px-4 sm:px-8 md:px-12 lg:px-16">
-        <div className="w-10/12 sm:w-8/12 md:w-6/12 lg:w-4/12 max-w-screen-xl bg-white shadow-lg rounded-lg p-6 md:p-8 flex flex-col gap-6">
+        <div className="relative w-10/12 sm:w-8/12 md:w-6/12 lg:w-4/12 max-w-screen-xl bg-white shadow-lg rounded-lg p-6 md:p-8 flex flex-col gap-6">
+
+            <button className="absolute top-2 right-2" onClick={close}>
+                <MdClose fontSize={20} />
+            </button>
 
             <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
                 <motion.div
@@ -120,8 +127,9 @@ const Review = () => {
                             Send Google Review
                         </button>
                         <button
-                            className="w-full py-2 bg-[#1B3A54] text-white rounded-md transition hover:bg-[#19486e]"
+                            className={`w-full py-2 rounded-md transition ${rating === 0 ? 'bg-gray-400 text-white' : 'bg-[#1B3A54] text-white hover:bg-[#19486e]'}`}
                             onClick={generateReview}
+                            disabled={rating === 0}
                         >
                             {loading ? 'Generating...' : 'Generate Review'}
                         </button>
@@ -130,7 +138,6 @@ const Review = () => {
 
             </div>
         </div>
-        // </div>
 
     );
 };

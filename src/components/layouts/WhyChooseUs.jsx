@@ -1,5 +1,5 @@
 import { FaCircleCheck } from "react-icons/fa6";
-import Slider from "../common/Slider";
+import ImageSlider from "../common/ImageSlider";
 import { useEffect, useState } from "react";
 import { ENV_VAR } from "../../utils/envVariables";
 import axios from "axios";
@@ -27,8 +27,8 @@ function WhyChooseUs() {
 
     return (
         <div className="hero flex justify-center items-center">
-            {/* <Slider images={["assets/images/slider banner/1.jpg", "assets/images/slider banner/2.jpg", "assets/images/slider banner/3.jpg"]} /> */}
-            <Slider images={banners} />
+            {/* <ImageSlider images={["assets/images/slider banner/1.jpg", "assets/images/slider banner/2.jpg", "assets/images/slider banner/3.jpg"]} /> */}
+            <ImageSlider images={banners} />
             {/* <img src="/assets/images/fff.png" alt="" /> */}
             {/* <div className="flex flex-col md:flex-row items-center md:items-start gap-10 md:gap-0">
 

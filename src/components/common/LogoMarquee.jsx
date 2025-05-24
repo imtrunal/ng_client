@@ -1,16 +1,26 @@
-import React from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 import Marquee from "react-fast-marquee";
+import { ENV_VAR } from "../../utils/envVariables";
 
-const logos = Array.from({ length: 24 }, (_, i) => `/assets/images/client logo/c${i + 1}.png`);
 
 export default function LogoMarquee() {
+  const [logos, setLogos] = useState([]);
+  const fetchAllCilientLogos = async () => {
+    const response = await axios.get(`${ENV_VAR.API_URL}/clients`);
+    setLogos(response.data);
+  };
+  useEffect(() => {
+    fetchAllCilientLogos();
+  }, [])
+  
   return (
     <div className="bg-white py-6 mt-6">
       <Marquee gradient={false} speed={50} className="flex items-center">
-        {logos.concat(logos).map((src, index) => (
+        {logos.map((logo, index) => (
           <img
             key={index}
-            src={src}
+            src={logo.link}
             alt={`logo-${index}`}
             className="w-24 md:w-36 mx-5 md:mx-10 filter-none md:grayscale hover:filter-none transition-all"
           />

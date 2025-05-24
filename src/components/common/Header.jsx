@@ -20,6 +20,8 @@ function Header() {
     const location = useLocation();
 
     useEffect(() => {
+        console.log("menuItems", menuItems);
+        
         const scollHandler = window.addEventListener("scroll", (e) => {
             const topPadding = e.target.scrollingElement.scrollTop;
             if (topPadding > 50) {
@@ -96,6 +98,13 @@ function Header() {
         };
     }, []);
 
+    const scrollToTop = () => {
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+        });
+    }
+
     const handleNavigate = (mainCategory, subCategory = null) => {
         setDesktopSubMenuOpen(null);
         if (subCategory) {
@@ -103,6 +112,7 @@ function Header() {
         } else {
             navigate(`/catalog/${mainCategory}`);
         }
+        scrollToTop();
     };
 
     return (
@@ -110,7 +120,10 @@ function Header() {
             {/* Logo */}
             <div className="text-xl font-semibold">
                 <img
-                    onClick={() => navigate("/home")}
+                    onClick={() => {
+                        navigate("/home");
+                        scrollToTop();
+                    }}
                     src="/assets/images/nirmanam logo.svg"
                     className="w-24 md:w-32 cursor-pointer"
                     alt="logo"
@@ -122,7 +135,10 @@ function Header() {
                 <ul className="flex space-x-6 lg:space-x-10 text-sm md:text-md text-[#1B3A54] font-medium">
                     <li>
                         <a
-                            onClick={() => navigate("/home")}
+                            onClick={() => {
+                                navigate("/home")
+                                scrollToTop();
+                            }}
                             className={`cursor-pointer transition-colors duration-200 ${location.pathname === '/home' ? 'text-Orange' : 'hover:text-Orange'}`}
                         >
                             Home
@@ -153,7 +169,7 @@ function Header() {
                                             <div
                                                 onClick={() => handleNavigate(item.routePath, category.route)}
                                                 key={index}
-                                                className={`shadow cursor-pointer flex items-center space-x-1 p-2 rounded-lg transition-colors duration-200 ${isActiveRoute(item.routePath, category.route) ? 'bg-Orange/20' : 'hover:bg-Orange/20'}`}
+                                                className={`shadow cursor-pointer flex items-center space-x-1 p-3 rounded-lg transition-colors duration-200 ${isActiveRoute(item.routePath, category.route) ? 'bg-Orange/20' : 'hover:bg-Orange/20'}`}
                                             >
                                                 <div className="text-blue-600 p-2 rounded-md flex-shrink-0">
                                                     <img src={category.icon} className="w-6" alt="" />
@@ -168,7 +184,11 @@ function Header() {
                     ))}
                     <li>
                         <a
-                            href="/eklg-converter"
+                            // href="/eklg-converter"
+                            onClick={() => {
+                                navigate("/eklg-converter")
+                                scrollToTop();
+                            }}
                             className={`cursor-pointer transition-colors duration-200 ${location.pathname === '/eklg-converter' ? 'text-Orange' : 'hover:text-Orange'}`}
                         >
                             EKLG
@@ -184,9 +204,9 @@ function Header() {
                     </li>
                 </ul>
 
-                <button className="border border-Orange text-sm font-semibold text-black px-4 py-1.5 md:px-5 md:py-2 rounded-full hover:bg-Orange/20 transition-colors duration-200">
+                <a href="/lets-talk" className="border border-Orange text-sm font-semibold text-black px-4 py-1.5 md:px-5 md:py-2 rounded-full hover:bg-Orange/20 transition-colors duration-200">
                     Let's Talk
-                </button>
+                </a >
             </div>
 
             {/* Mobile Menu Button */}
@@ -272,7 +292,7 @@ function Header() {
                     </ul>
 
                     <a
-                        href="#"
+                        href="/lets-talk"
                         className="border border-Orange text-sm font-semibold text-black px-5 py-2 rounded-full hover:bg-Orange/20 transition-colors duration-200 w-full text-center"
                     >
                         Let's Talk

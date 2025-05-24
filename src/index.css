@@ -13,10 +13,11 @@ input[type="number"] {
     -moz-appearance: textfield;
 }
 
-html{
+html {
     scroll-behavior: smooth;
     scroll-padding: 120px;
 }
+
 body {
     background-color: #fff;
     margin: 0px;
@@ -56,3 +57,17 @@ body {
     transform: rotate(180deg);
 }
 
+.rpv-default-layout__toolbar button[aria-label="Download"],
+.rpv-default-layout__toolbar button[aria-label="Print"],
+.rpv-default-layout__toolbar button[aria-label="Open file"],
+[data-testid="get-file__download-menu"],
+[data-testid="open__menu"],
+[data-testid="print__menu"],
+#rpv-default-layout__sidebar-tab-1,
+#rpv-default-layout__sidebar-tab-2 {
+    display: none !important;
+}
+
+.rpv-core__splitter {
+    background-color: #e2e2e7 !important;
+}

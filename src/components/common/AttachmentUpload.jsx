@@ -1,19 +1,24 @@
 import React, { useState } from 'react';
 import { FaTrashAlt } from 'react-icons/fa'; // Import trash icon (FontAwesome)
+import { toast } from 'sonner';
 
-const AttachmentUpload = () => {
+const AttachmentUpload = ({ onFileChange }) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [isDragOver, setIsDragOver] = useState(false);
 
   // Handle file selection through both click and drag-drop
   const handleFileChange = (e) => {
     const file = e.target.files[0];
-    if (file && file.size <= 5 * 1024 * 1024) {
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error("File too large. Max 5MB allowed.");
+        return;
+      }
       setSelectedFile(file);
-    } else {
-      alert("File too large. Max 5MB allowed.");
+      onFileChange(file);
     }
   };
+
 
   const handleDragOver = (e) => {
     e.preventDefault();
@@ -28,15 +33,19 @@ const AttachmentUpload = () => {
     e.preventDefault();
     setIsDragOver(false);
     const file = e.dataTransfer.files[0];
-    if (file && file.size <= 5 * 1024 * 1024) {
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error("File too large. Max 5MB allowed.");
+        return;
+      }
       setSelectedFile(file);
-    } else {
-      alert("File too large. Max 5MB allowed.");
+      onFileChange(file);
     }
   };
 
   const handleDelete = () => {
-    setSelectedFile(null); // Remove the selected file
+    setSelectedFile(null);
+    onFileChange(null);
   };
 
   return (

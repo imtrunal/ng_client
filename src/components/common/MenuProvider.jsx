@@ -15,18 +15,14 @@ export function MenuProvider({ children }) {
             try {
                 const res = await fetch(`${ENV_VAR.API_URL}/category`);
                 if (!res.ok) throw new Error("Failed to fetch categories");
-                const data = await res.json();
+                const data = await res.json();                
 
-                let iconIndex = 0;
                 const items = data.map((category) => {
                     const subcategories = category.subcategories.map((subcat) => {
-                        const icon =
-                            iconsByIndex[iconIndex++] ||
-                            "https://cdn-icons-png.flaticon.com/128/565/565547.png";
                         return {
                             id: category._id,
                             title: subcat.name,
-                            icon,
+                            icon:subcat.icon,
                             route: subcat.name.replace(/\s+/g, "-").toLowerCase(),
                         };
                     });

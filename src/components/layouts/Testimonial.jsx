@@ -9,7 +9,7 @@ function Testimonial() {
     const reviews = [
         {
             text: "High-quality designs, prompt service, and friendly staff. Highly recommended for all types of invitation cards, videos, and custom festival cards, particularly for businesses.",
-            name: "Ravindra Naskrani",
+            name: "Ravindra Nakrani",
         },
         {
             text: "I really had a great experience with nirman graphics as they have variety of designs and they also provide good quality and variety of designs!!",
@@ -30,7 +30,7 @@ function Testimonial() {
     ];
 
     return (
-        <div className="flex flex-col w-full mt-20 px-5 md:px-[9%]">
+        <div className="flex flex-col w-full mt-20 px-5 md:px-[9%] ">
             <div className="flex flex-col gap-3">
                 <p className="text-lg text-Orange">TESTIMONIAL</p>
                 <h1 className="text-3xl font-bold md:w-1/4 w-full leading-tight tracking-wide mb-10 md:m-0">

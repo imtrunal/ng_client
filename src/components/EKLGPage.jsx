@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { ENV_VAR } from './../utils/envVariables';
+import { ENV_VAR } from '../utils/envVariables';
 
 const EKLGPage = () => {
     const [uniqueText, setuniqueText] = useState("");

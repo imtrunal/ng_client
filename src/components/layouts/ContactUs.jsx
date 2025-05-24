@@ -1,10 +1,10 @@
 import { useRef, useState } from "react";
 import { FaCircleCheck } from "react-icons/fa6";
 import Select from 'react-select'
-import { whatsAppNumber } from "../../utils/data";
 import AttachmentUpload from "../common/AttachmentUpload";
 import { toast } from 'sonner';
 import { useMenu } from "../common/MenuProvider";
+import { ENV_VAR } from "../../utils/envVariables";
 
 function ContactUs() {
     const [formData, setFormData] = useState({
@@ -18,6 +18,14 @@ function ContactUs() {
     const [selectedSubCategory, setSelectedSubCategory] = useState(null);
     const [subCategories, setFilteredSubCategories] = useState(null);
     const menuItems = useMenu();
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [isUploading, setIsUploading] = useState(false);
+
+    const handleFileChange = (file) => {
+        console.log(file);
+
+        setSelectedFile(file);
+    };
 
     const customStyles = {
         control: (base, state) => ({
@@ -109,33 +117,76 @@ function ContactUs() {
     };
 
 
-    const handleSendToWhatsApp = () => {
+    const uploadFile = async (file) => {
+        const formData = new FormData();
+        formData.append('attachedFiles', file);
+
+        try {
+            const response = await fetch(`${ENV_VAR.API_URL}/upload`, { // Replace with your actual API endpoint
+                method: 'POST',
+                body: formData,
+            });
+
+            if (!response.ok) {
+                throw new Error('Upload failed');
+            }
+
+            const data = await response.json();
+            return data.url; // Assuming your API returns { url: '...' }
+        } catch (error) {
+            toast.error("File upload failed. Please try again.");
+            console.error('Upload error:', error);
+            return null;
+        }
+    };
+
+
+    const handleSendToWhatsApp = async () => {
         if (!validateForm()) return;
 
-        const phoneNumber = whatsAppNumber;
+        setIsUploading(true);
+        let attachmentUrl = null;
+
+        // Upload file if one was selected
+        if (selectedFile) {
+            attachmentUrl = await uploadFile(selectedFile);
+            if (!attachmentUrl) {
+                setIsUploading(false);
+                return; // Don't proceed if upload failed
+            }
+        }
+
+        const phoneNumber = ENV_VAR.whatsappNumber;
         const category = selectedCategory?.label || '';
         const subCategory = selectedSubCategory?.label || '';
 
-        const message = `Hello,
+        let message = `Hello,
 
-    I am interested in your services and would like to inquire further.
+I am interested in your services and would like to inquire further.
 
-    📂*Category:* ${category}  
-    📂*Sub-Category:* ${subCategory}
+📂*Category:* ${category}  
+📂*Sub-Category:* ${subCategory}
 
-    👤*Name:* ${formData.fullName}  
-    📞*Mobile:* ${formData.mobile}
+👤*Name:* ${formData.fullName}  
+📞*Mobile:* ${formData.mobile}
 
-    📝*Message:*  
-    ${formData.message}
+📝*Message:*  
+${formData.message}`;
 
-    Thank you for your time !.  
-    I look forward to your response.`;
+        // Add attachment URL if available
+        if (attachmentUrl) {
+            message += `\n\n📎*Attachment:* ${attachmentUrl}`;
+        }
+
+        message += `\n\nThank you for your time!  
+I look forward to your response.`;
 
         const isMobile = /iPhone|Android/i.test(navigator.userAgent);
         const url = isMobile
             ? `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`
             : `https://web.whatsapp.com/send?phone=${phoneNumber}&text=${encodeURIComponent(message)}`;
+
+        setIsUploading(false);
         window.open(url, '_blank');
     };
 
@@ -242,15 +293,17 @@ function ContactUs() {
                             />
                         </label>
 
-                        {/* <AttachmentUpload /> */}
+                        <AttachmentUpload onFileChange={handleFileChange} />
 
                         <div className="flex justify-center md:justify-start mt-7 mb-5">
-                            <a
+                            <button
                                 onClick={handleSendToWhatsApp}
-                                className="cursor-pointer bg-Orange hover:bg-Orange/90 border-2 text-white px-12 p-4 rounded-full font-semibold shadow-2xl shadow-Orange/30 transition-all duration-500 hover:duration-100 ease-in-out"
+                                disabled={isUploading}
+                                className={`cursor-pointer bg-Orange hover:bg-Orange/90 border-2 text-white px-12 p-4 rounded-full font-semibold shadow-2xl shadow-Orange/30 transition-all duration-500 hover:duration-100 ease-in-out ${isUploading ? 'opacity-70 cursor-not-allowed' : ''
+                                    }`}
                             >
-                                Send Message
-                            </a>
+                                {isUploading ? 'Uploading...' : 'Send Message'}
+                            </button>
                         </div>
                     </form>
                 </div>
