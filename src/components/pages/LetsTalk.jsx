@@ -15,15 +15,15 @@ import WhyChooseUs from "../layouts/WhyChooseUs";
 
 function LetsTalk() {
     return (
+        <>
+        <div className="rounded-md overflow-hidden mb-28">
+            <img
+                src="/assets/images/letsTalk.jpg"
+                alt="Contact us banner"
+                className="w-full h-[550px] object-cover"
+            />
+        </div>
         <div className="relative px-4 md:px-[3%] py-8 mx-auto max-w-7xl" id="contactUs">
-            <div className="rounded-md overflow-hidden mb-28">
-                <img
-                    src="/assets/images/letsTalk.jpg"
-                    alt="Contact us banner"
-                    className="w-full h-[450px] object-cover"
-                />
-            </div>
-
             <ContactUs />
 
             <div className="px-4 sm:px-6 lg:px-8">
@@ -75,6 +75,7 @@ function LetsTalk() {
                 </div>
             </div>
         </div>
+        </>
     );
 }
 

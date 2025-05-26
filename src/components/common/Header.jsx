@@ -194,14 +194,14 @@ function Header() {
                             EKLG
                         </a>
                     </li>
-                    <li>
+                    {/* <li>
                         <a
                             href="/home#contactUs"
                             className={`cursor-pointer transition-colors duration-200 ${location.hash === '#contactUs' ? 'text-Orange' : 'hover:text-Orange'}`}
                         >
                             Contact Us
                         </a>
-                    </li>
+                    </li> */}
                 </ul>
 
                 <a href="/lets-talk" className="border border-Orange text-sm font-semibold text-black px-4 py-1.5 md:px-5 md:py-2 rounded-full hover:bg-Orange/20 transition-colors duration-200">
