@@ -1,63 +1,80 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import * as pdfjsLib from "pdfjs-dist/build/pdf.js";
 import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.min.js?url";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay } from "swiper/modules";
-import "swiper/css";
-import "../common/swiper.css";
-import { Skeleton } from "@heroui/react";
 import HoverSwiper from "../common/Slider2";
+import { Skeleton } from "@heroui/react";
+
+// 1. ADD THESE CACHE FUNCTIONS AT THE TOP OF THE FILE (right after imports)
+const getPdfCache = () => {
+  try {
+    const cache = localStorage.getItem('pdfCache');
+    return cache ? new Map(JSON.parse(cache)) : new Map();
+  } catch (e) {
+    console.warn("Failed to read PDF cache", e);
+    return new Map();
+  }
+};
+
+const savePdfCache = (cache) => {
+  try {
+    localStorage.setItem('pdfCache', JSON.stringify(Array.from(cache.entries())));
+  } catch (e) {
+    console.warn("Failed to save PDF cache", e);
+  }
+};
+
+const memoryCache = new Map();
+const MAX_MEMORY_CACHE_SIZE = 20;
+// END OF CACHE FUNCTIONS
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
 
 export default function PdfSlider({ pdfUrl, width = 300, scale = 1.5 }) {
-  const [pdfDoc, setPdfDoc] = useState(null);
-  const [numPages, setNumPages] = useState(0);
   const [canvases, setCanvases] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    if (!pdfUrl) return;
+  // 2. REPLACE YOUR EXISTING renderPdf FUNCTION WITH THIS:
+  const renderPdf = useCallback(async (url) => {
+    if (!url) return;
     
-    let cancelled = false;
+    // Check memory cache first
+    if (memoryCache.has(url)) {
+      setCanvases(memoryCache.get(url));
+      return;
+    }
+    
+    // Check persistent cache
+    const persistentCache = getPdfCache();
+    if (persistentCache.has(url)) {
+      const cachedData = persistentCache.get(url);
+      memoryCache.set(url, cachedData);
+      setCanvases(cachedData);
+      return;
+    }
 
-    pdfjsLib
-      .getDocument({ 
-        url: pdfUrl,
+    setIsLoading(true);
+    
+    try {
+      const doc = await pdfjsLib.getDocument({ 
+        url,
         cMapUrl: "https://cdn.jsdelivr.net/npm/pdfjs-dist@3.4.120/cmaps/",
         cMapPacked: true,
-      })
-      .promise.then((doc) => {
-        if (cancelled) return;
-        setPdfDoc(doc);
-        setNumPages(doc.numPages);
-      })
-      .catch(console.error);
+      }).promise;
 
-    return () => {
-      cancelled = true;
-    };
-  }, [pdfUrl]);
-
-  useEffect(() => {
-    if (!pdfDoc || numPages === 0) return;
-
-    let cancelled = false;
-
-    const renderAllPages = async () => {
       const canvasImages = [];
+      const numPages = Math.min(doc.numPages, 5);
 
       for (let i = 1; i <= numPages; i++) {
-        const page = await pdfDoc.getPage(i);
+        const page = await doc.getPage(i);
         const vp0 = page.getViewport({ scale: 1 });
         const actualScale = (width / vp0.width) * scale;
         const viewport = page.getViewport({ 
           scale: actualScale,
-          dpi: 300 
+          dpi: 144
         });
 
-        // Create canvas with higher resolution
         const canvas = document.createElement("canvas");
-        const outputScale = window.devicePixelRatio || 1;
+        const outputScale = 1;
         canvas.width = Math.floor(viewport.width * outputScale);
         canvas.height = Math.floor(viewport.height * outputScale);
         canvas.style.width = Math.floor(viewport.width) + "px";
@@ -66,75 +83,45 @@ export default function PdfSlider({ pdfUrl, width = 300, scale = 1.5 }) {
         const context = canvas.getContext("2d");
         context.scale(outputScale, outputScale);
         
-        const renderContext = {
+        await page.render({
           canvasContext: context,
           viewport: viewport,
-          intent: "display",
-          imageLayer: true,
-          enableWebGL: true,
-        };
+          intent: "display"
+        }).promise;
 
-        await page.render(renderContext).promise;
-
-        // Use PNG format for better quality
-        canvasImages.push(canvas.toDataURL("image/png", 1.0));
+        canvasImages.push(canvas.toDataURL("image/webp", 0.7)); // Changed to webp
       }
 
-      if (!cancelled) {
-        setCanvases(canvasImages);
+      // Store in caches
+      memoryCache.set(url, canvasImages);
+      if (memoryCache.size > MAX_MEMORY_CACHE_SIZE) {
+        memoryCache.delete(memoryCache.keys().next().value);
       }
-    };
+      
+      const persistentCache = getPdfCache();
+      persistentCache.set(url, canvasImages);
+      savePdfCache(persistentCache);
 
-    renderAllPages();
+      setCanvases(canvasImages);
+    } catch (error) {
+      console.error("PDF rendering error:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [width, scale]);
 
-    return () => {
-      cancelled = true;
-    };
-  }, [pdfDoc, numPages, width, scale]);
+  // 3. KEEP YOUR EXISTING useEffect AND RENDER CODE
+  useEffect(() => {
+    renderPdf(pdfUrl);
+  }, [pdfUrl, renderPdf]);
 
+  if (isLoading) {
+    return (
+      <Skeleton className="rounded-lg">
+        <div className="h-32 rounded-lg bg-default-300" />
+      </Skeleton>
+    );
+  }
 
-  return (
-    <HoverSwiper slides={canvases}/>
-    // <div
-    //   className="w-full"
-    //   ref={containerRef}
-    //   onMouseEnter={handleMouseEnter}
-    //   onMouseLeave={handleMouseLeave}
-    // >
-    //   {canvases.length > 0 ? (
-    //     <Swiper
-    //       className="mySwiper"
-    //       slidesPerView={1}
-    //       loop={false}
-    //       autoplay={{
-    //         delay: 1000,
-    //         disableOnInteraction: false,
-    //       }}
-    //       modules={[Autoplay]}
-    //       onSwiper={(swiper) => {
-    //         swiperRef.current = swiper;
-    //         swiper.autoplay.stop();
-    //       }}
-    //       allowTouchMove={false}
-    //     >
-    //       {canvases.map((dataUrl, index) => (
-    //         <SwiperSlide key={index}>
-    //           <img
-    //             src={dataUrl}
-    //             alt={`PDF Page ${index + 1}`}
-    //             className="w-full"
-    //             style={{
-    //               imageRendering: "crisp-edges", 
-    //             }}
-    //           />
-    //         </SwiperSlide>
-    //       ))}
-    //     </Swiper>
-    //   ) : (
-    //     <Skeleton className="rounded-lg">
-    //       <div className="h-32 rounded-lg bg-default-300" />
-    //     </Skeleton>
-    //   )}
-    // </div>
-  );
+  return <HoverSwiper slides={canvases} />;
 }

@@ -110,8 +110,7 @@
 
 // export default HoverVideo;
 import React, { useRef, useState, useEffect } from 'react';
-import { MdOutlineOndemandVideo } from 'react-icons/md';
-
+import { BsPlayCircleFill } from "react-icons/bs";
 const HoverVideo = ({ videoUrl, posterUrl }) => {
     const videoRef = useRef(null);
     const containerRef = useRef(null);
@@ -194,8 +193,8 @@ const HoverVideo = ({ videoUrl, posterUrl }) => {
         >
             {/* Play Icon Overlay */}
             {!isHovered && !isPlaying && (
-                <div className="bg-black/60 absolute inset-0 flex items-center justify-center z-10 transition-opacity duration-300">
-                    <MdOutlineOndemandVideo size={80} color="#fff" />
+                <div className="bg-black/60 absolute inset-0 text-Orange flex items-center justify-center z-10 transition-opacity duration-300">
+                    <BsPlayCircleFill  size={80} />
                 </div>
             )}
 
@@ -205,7 +204,7 @@ const HoverVideo = ({ videoUrl, posterUrl }) => {
                 className="w-full h-auto rounded-lg"
                 src={videoUrl}
                 poster={posterUrl}
-                muted={!isHovered}
+                muted
                 preload="metadata"
                 style={{
                     display: isHovered || isPlaying ? 'block' : 'none',
@@ -215,7 +214,7 @@ const HoverVideo = ({ videoUrl, posterUrl }) => {
             />
 
             {/* Thumbnail Fallback */}
-            {!isHovered && !isPlaying && (
+            {posterUrl && !isHovered && !isPlaying && (
                 <img
                     src={posterUrl}
                     alt="Video Thumbnail"

@@ -16,13 +16,12 @@ import WhyChooseUs from "../layouts/WhyChooseUs";
 function LetsTalk() {
     return (
         <div className="relative px-4 md:px-[3%] py-8 mx-auto max-w-7xl" id="contactUs">
-            <div className="w-full rounded-md overflow-hidden mb-28">
-                {/* <img
-                    src="https://placehold.co/1100x400?text=Banner"
+            <div className="rounded-md overflow-hidden mb-28">
+                <img
+                    src="/assets/images/letsTalk.jpg"
                     alt="Contact us banner"
-                    className="w-full h-full object-cover"
-                /> */}
-                <WhyChooseUs />
+                    className="w-full h-[450px] object-cover"
+                />
             </div>
 
             <ContactUs />
@@ -80,6 +79,3 @@ function LetsTalk() {
 }
 
 export default LetsTalk;
-
-
-

@@ -327,8 +327,9 @@ const CatalogPage = () => {
 
   const handleShare = (product, isInquiry) => {
     const phoneNumber = ENV_VAR.whatsappNumber;
+    const baseUrl = ENV_VAR.FE_URL;
     const subCategory = product.subCategory.name.toLowerCase().replace(/\s+/g, '-');
-    const productUrl = `http://192.168.1.7:5173/catalog/${activeMainCategory}/${subCategory}?id=${product.title}`;
+    const productUrl = `${baseUrl}/catalog/${activeMainCategory}/${subCategory}?id=${product.title}`;
 
     const message = isInquiry ?
       `Hello 👋,
@@ -355,7 +356,7 @@ ${productUrl}
 
 Check out our catalog for more amazing products! 🛍️
 
-http://192.168.1.7:5173/catalog/${activeMainCategory}/${subCategory}/`;
+${baseUrl}/catalog/${activeMainCategory}/${subCategory}/`;
 
 
     const isMobile = /iPhone|Android/i.test(navigator.userAgent);
@@ -573,7 +574,7 @@ http://192.168.1.7:5173/catalog/${activeMainCategory}/${subCategory}/`;
                     className="group break-inside-avoid border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow bg-white cursor-pointer"
                   >
                     <div className="relative" onContextMenu={(e) => e.preventDefault()}>
-                      {item.image?.length > 0 ? (
+                      {item.image?.length > 0 && !item.video ? (
                         <div className="w-full relative">
                           <HoverSwiper slides={item.image.map(img => img.url)} />
                         </div>
@@ -592,7 +593,7 @@ http://192.168.1.7:5173/catalog/${activeMainCategory}/${subCategory}/`;
                           {/* Video Component */}
                           <HoverVideo
                             videoUrl={item.video.url}
-                            posterUrl={'https://invitoai.com/zcollection/1064.png'}
+                            posterUrl={item.image?.[0]?.url}
                           />
                         </div>
 
@@ -723,7 +724,6 @@ http://192.168.1.7:5173/catalog/${activeMainCategory}/${subCategory}/`;
                 alt={category.name}
                 className="w-full h-auto max-h-48 object-cover md:max-h-[300px] sm:max-h-[200px]"
               />
-              <h3 className="mt-2 text-lg font-medium">{category.name}</h3>
             </a>
           ))}
         </div>
