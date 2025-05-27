@@ -281,14 +281,14 @@ function Header() {
                                 EKLG
                             </a>
                         </li>
-                        <li>
+                        {/* <li>
                             <a
                                 href="#contactUs"
                                 className={`block py-2 cursor-pointer transition-colors duration-200 ${location.hash === '#contactUs' ? 'text-Orange' : 'hover:text-Orange'}`}
                             >
                                 Contact Us
                             </a>
-                        </li>
+                        </li> */}
                     </ul>
 
                     <a
