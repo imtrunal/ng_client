@@ -14,9 +14,9 @@ const SplashScreen = () => {
             autoplay: true,
             path: '/assets/lottie/loader2.json',
         });
-        // setTimeout(() => {
-        //     navigate("/home");
-        // }, 5000);
+        setTimeout(() => {
+            navigate("/home");
+        }, 5000);
 
         return () => {
             Lottie.destroy();

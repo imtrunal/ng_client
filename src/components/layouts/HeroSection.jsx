@@ -43,7 +43,7 @@ function HeroSection(params) {
         <div className="relative w-full max-w-md md:max-w-[570px] -mt-10 md:-mt-16 mx-auto md:mx-0">
           <img
             className="w-full"
-            src="/assets/images/HeroBanner.png"
+            src="/assets/images/Group 2050 1.svg"
             alt="Hero Banner"
           />
         </div>
