@@ -14,9 +14,9 @@ const SplashScreen = () => {
             autoplay: true,
             path: '/assets/lottie/loader2.json',
         });
-        setTimeout(() => {
-            navigate("/home");
-        }, 5000);
+        // setTimeout(() => {
+        //     navigate("/home");
+        // }, 5000);
 
         return () => {
             Lottie.destroy();
@@ -28,7 +28,7 @@ const SplashScreen = () => {
         <div className="w-full min-h-screen bg-DarkBlue flex flex-col relative">
             <div className="w-full flex justify-center pt-4 px-2 md:px-0">
                 <img
-                    className="w-full md:w-1/2 lg:w-1/3"
+                    className="w-1/2 md:w-2/12 lg:w-2/12"
                     src="/assets/images/Kashtabhanjan dev.png"
                     alt="Kashtabhanjan Dev"
                 />

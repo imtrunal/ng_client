@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay } from 'swiper/modules';
 import { Skeleton } from '@heroui/react';
@@ -11,23 +11,36 @@ const HoverSwiper = ({
   allowTouchMove = false,
   className = "",
   slideClassName = "",
-  skeletonHeight = "h-32",
+  skeletonHeight = "h-52",
 }) => {
   const swiperRef = useRef(null);
   const containerRef = useRef(null);
   const [isMobile, setIsMobile] = useState(false);
   const [isInView, setIsInView] = useState(false);
+  const resizeTimeoutRef = useRef(null);
 
-  // Check if mobile on mount
-  useEffect(() => {
-    const checkIfMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
+  // Debounced mobile check
+  const checkIfMobile = useCallback(() => {
+    if (resizeTimeoutRef.current) {
+      clearTimeout(resizeTimeoutRef.current);
+    }
     
+    resizeTimeoutRef.current = setTimeout(() => {
+      setIsMobile(window.innerWidth <= 768);
+    }, 100);
+  }, []);
+
+  // Check if mobile on mount and set up resize listener
+  useEffect(() => {
     checkIfMobile();
     window.addEventListener('resize', checkIfMobile);
-    return () => window.removeEventListener('resize', checkIfMobile);
-  }, []);
+    return () => {
+      window.removeEventListener('resize', checkIfMobile);
+      if (resizeTimeoutRef.current) {
+        clearTimeout(resizeTimeoutRef.current);
+      }
+    };
+  }, [checkIfMobile]);
 
   // Set up Intersection Observer for mobile only
   useEffect(() => {
@@ -59,15 +72,33 @@ const HoverSwiper = ({
     };
   }, [isMobile]);
 
-  const handleMouseEnter = () => {
+  // Memoized event handlers
+  const handleMouseEnter = useCallback(() => {
     if (isMobile) return;
     swiperRef.current?.autoplay?.start();
-  };
+  }, [isMobile]);
 
-  const handleMouseLeave = () => {
+  const handleMouseLeave = useCallback(() => {
     if (isMobile) return;
     swiperRef.current?.autoplay?.stop();
     swiperRef.current?.slideTo(0);
+  }, [isMobile]);
+
+  // Image optimization - lazy loading and decoding
+  const renderSlide = (slide, index) => {
+    if (typeof slide === 'string') {
+      return (
+        <img
+          src={slide}
+          alt={`Slide ${index + 1}`}
+          className="w-full"
+          style={{ imageRendering: "crisp-edges" }}
+          loading="lazy"
+          decoding="async"
+        />
+      );
+    }
+    return slide;
   };
 
   return (
@@ -89,32 +120,26 @@ const HoverSwiper = ({
           modules={[Autoplay]}
           onSwiper={(swiper) => {
             swiperRef.current = swiper;
-            swiper.autoplay.stop(); // Start stopped by default
+            swiper.autoplay.stop();
           }}
           allowTouchMove={isMobile ? true : allowTouchMove}
+          speed={500} // Smoother transition
+          resistanceRatio={0.7} // Better feel when dragging
+          watchSlidesProgress={true}
         >
           {slides.map((slide, index) => (
             <SwiperSlide key={index} className={slideClassName}>
-              {typeof slide === 'string' ? (
-                <img
-                  src={slide}
-                  alt={`Slide ${index + 1}`}
-                  className="w-full"
-                  style={{ imageRendering: "crisp-edges" }}
-                />
-              ) : (
-                slide
-              )}
+              {renderSlide(slide, index)}
             </SwiperSlide>
           ))}
         </Swiper>
       ) : (
         <Skeleton className="rounded-lg">
-          <div className={`${skeletonHeight} rounded-lg bg-default-300`} />
+          <div className={`w-full ${skeletonHeight} rounded-lg bg-default-300`} />
         </Skeleton>
       )}
     </div>
   );
 };
 
-export default HoverSwiper;
+export default React.memo(HoverSwiper);

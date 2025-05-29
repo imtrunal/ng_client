@@ -7,44 +7,20 @@ import { FiShare2, FiCopy, FiX } from "react-icons/fi";
 import axios from 'axios';
 import { ENV_VAR } from './../../utils/envVariables';
 import { toast } from 'sonner';
-import { FaFilePdf } from "react-icons/fa";
-import { FaFacebook, FaTwitter, FaLinkedin, FaWhatsapp } from 'react-icons/fa';
 import { catalog } from '../../utils/data';
 import PdfPreview from './PreviewPDFPage';
-import { Skeleton } from "@heroui/react";
 import { Slider } from "@heroui/react";
 import HoverSwiper from './../common/Slider2';
 import HoverVideo from '../common/HoverVideo';
 import { MdOutlineOndemandVideo, MdSupportAgent } from "react-icons/md";
 import { FiDownload } from "react-icons/fi";
 
-const sha = [
-  "Rectangle",
-  "Square",
-  "Circle",
-  "Oval",
-  "Triangle",
-  "Custom Shape"
-];
-
-const COLOR_OPTIONS = [
-  "Red",
-  "Blue",
-  "Green",
-  "Yellow",
-  "Black",
-  "White",
-  "Silver",
-  "Gold",
-  "Custom Color"
-];
-
 const CatalogPage = () => {
   const location = useLocation();
   const [productData, setProductData] = useState({});
   const [categories, setCategories] = useState([]);
   const [activeMainCategory, setActiveMainCategory] = useState("");
-  const [activeSubCategory, setActiveCategory] = useState("");
+  const [activeSubCategory, setActiveSubCategory] = useState("");
   const [filteredItems, setFilteredItems] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [showFilters, setShowFilters] = useState(false);
@@ -61,178 +37,152 @@ const CatalogPage = () => {
   const [searchParam, setSearchParam] = useState('');
   const [colorOptions, setColorOptions] = useState([]);
   const [shapeOptions, setShapeOptions] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [mainCategoryId, setMainCategoryId] = useState(null);
+  const [subCategoryId, setSubCategoryId] = useState(null);
 
-  // Fetch categories and products data
-  const fetchData = async () => {
+
+  // Fetch categories and set initial category IDs
+  const fetchCategories = async () => {
     try {
-      // Fetch categories
       const categoriesResponse = await axios.get(`${ENV_VAR.API_URL}/category`);
       setCategories(categoriesResponse.data);
 
-      // Fetch products
-      const productsResponse = await axios.get(`${ENV_VAR.API_URL}/products/list`);
-      setProductData(productsResponse.data.catalogData || {});
+      const pathParts = location.pathname.split('/');
+      const currentMainCategory = pathParts[2];
+      const currentSubCategory = pathParts[3];
+      if (currentMainCategory) {
+        const mainCategory = categoriesResponse.data.find(cat =>
+          cat.name.toLowerCase() === currentMainCategory.toLowerCase()
+        );
 
-      //fecth color options
-      const colorOptionsResponse = await axios.get(`${ENV_VAR.API_URL}/colors/`);
-      setColorOptions(colorOptionsResponse.data);
+        if (mainCategory) {
+          setMainCategoryId(mainCategory._id);
+          setActiveMainCategory(currentMainCategory);
 
-      //fecth shape options
-      const shapeOptionsResponse = await axios.get(`${ENV_VAR.API_URL}/shapes/`);
-      setShapeOptions(shapeOptionsResponse.data);
+          if (currentSubCategory) {
+            const subCategory = mainCategory.subcategories.find(sub =>
+              sub.name.toLowerCase().replace(/\s+/g, '-') === currentSubCategory.toLowerCase()
+            );
 
-      // Calculate max price from products
-      const allProducts = Object.values(productsResponse.data.catalogData || {})
-        .flatMap(mainCat => Object.values(mainCat).flat());
-      const maxPrice = allProducts.reduce((max, item) => Math.max(max, item.price || 0), 0);
-      setPriceRange([0, Math.ceil(maxPrice / 1000) * 1000 || 10000]);
-      setInitialMaxPrice(Math.ceil(maxPrice / 1000) * 1000 || 10000);
-      setPriceFilter({ min: 0, max: Math.ceil(maxPrice / 1000) * 1000 || 10000 });
-    } catch (error) {
-      console.log(error);
-      toast.error("SERVER ERROR");
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-    setActiveCategory("");
-    setActiveMainCategory("");
-    resetFilters();
-
-    const pathParts = location.pathname.split('/');
-    const currentMainCategory = pathParts[2];
-    const currentSubCategory = pathParts[3];
-    const queryParams = new URLSearchParams(location.search);
-    const searchId = queryParams.get('id');
-    console.log(searchId);
-    setSearchParam(searchId);
-
-    if (currentMainCategory) setActiveMainCategory(currentMainCategory);
-    if (currentSubCategory) setActiveCategory(currentSubCategory);
-  }, [location]);
-
-  useEffect(() => {
-    let items = [];
-
-    if (activeMainCategory) {
-      // Find the main category ID from the categories data
-      const mainCategory = categories.find(cat =>
-        cat.name.toLowerCase() === activeMainCategory.toLowerCase()
-      );
-
-      if (mainCategory) {
-        const mainCategoryId = mainCategory._id;
-
-        if (activeSubCategory) {
-          // Find the subcategory ID from the categories data
-          const subCategory = mainCategory.subcategories.find(sub =>
-            sub.name.toLowerCase().replace(/\s+/g, '-') === activeSubCategory.toLowerCase()
-          );
-
-          if (subCategory) {
-            const subCategoryId = subCategory._id;
-            items = productData[mainCategoryId]?.[subCategoryId] || [];
-            if (searchParam) {
-              console.log("Search Param:", searchParam);
-
-              items = items.filter(item =>
-                item.title.toLowerCase().includes(searchParam.toLowerCase())
-              );
+            if (subCategory) {
+              setSubCategoryId(subCategory._id);
+              setActiveSubCategory(currentSubCategory);
             }
+          } else {
+            setSubCategoryId(null);
+            setActiveSubCategory('');
           }
-        } else {
-          // Get all products for the main category
-          const mainCategoryProducts = productData[mainCategoryId] || {};
-          items = Object.values(mainCategoryProducts).flat();
         }
       }
-    }
-
-    // Apply filters
-    if (searchTerm) {
-      items = items.filter(item =>
-        item.title.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    items = items.filter(item => {
-      return item.price >= priceFilter.min && item.price <= priceFilter.max;
-    });
-
-    // Apply material filter for specific categories
-    if (materialFilter !== 'all' &&
-      ((activeMainCategory === 'graphics' &&
-        (activeSubCategory === 'wedding-cards' || activeSubCategory === 'invitation-card')) ||
-        (activeMainCategory === 'gifting'))) {
-      items = items.filter(item =>
-        (item.material || item.type) &&
-        (item.material?.toLowerCase().includes(materialFilter.toLowerCase()) ||
-          item.type?.toLowerCase().includes(materialFilter.toLowerCase()))
-      );
-    }
-
-    // Apply shape filter for Graphics > Wedding/Invitation cards and Gifting
-    if (shapeFilter !== 'all' &&
-      ((activeMainCategory === 'graphics' &&
-        (activeSubCategory === 'wedding-cards' || activeSubCategory === 'invitation-card')) ||
-        (activeMainCategory === 'gifting'))) {
-      items = items.filter(item =>
-        item.shape?.toLowerCase() === shapeFilter.toLowerCase()
-      );
-    }
-
-    // Apply color filter for Graphics > Wedding/Invitation cards
-    if (colorFilter !== 'all' &&
-      activeMainCategory === 'graphics' &&
-      (activeSubCategory === 'wedding-cards' || activeSubCategory === 'invitation-card')) {
-      items = items.filter(item =>
-        item.color?.toLowerCase() === colorFilter.toLowerCase()
-      );
-    }
-
-    // Apply MOQ filter for Graphics and Gifting categories
-    if ((activeMainCategory === 'graphics' || activeMainCategory === 'gifting') && moqFilter !== 'all') {
-      const [min, max] = moqFilter.includes('+')
-        ? [parseInt(moqFilter), Infinity]
-        : moqFilter.split('-').map(Number);
-
-      items = items.filter(item => {
-        if (max === Infinity) {
-          return item.moq >= min;
-        }
-        return item.moq >= min && item.moq <= max;
-      });
-    }
-
-    // Apply format filter for Digital category
-    if (activeMainCategory === 'digital' && formatFilter !== 'all') {
-      items = items.filter(item => {
-        if (formatFilter === 'pdf') {
-          return item.pdf;
-        } else if (formatFilter === 'video') {
-          return item.video;
-        }
-        return true;
-      });
-    }
-
-    items = sortItems(items, sortOption);
-    setFilteredItems(items);
-  }, [productData, categories, activeMainCategory, activeSubCategory, searchTerm, priceFilter, materialFilter, sortOption, shapeFilter, colorFilter, moqFilter, formatFilter]);
-
-  const sortItems = (items, option) => {
-    const sortedItems = [...items];
-
-    switch (option) {
-      case 'price-low':
-        return sortedItems.sort((a, b) => a.price - b.price);
-      case 'price-high':
-        return sortedItems.sort((a, b) => b.price - a.price);
-      default:
-        return sortedItems;
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+      toast.error("Failed to load categories");
     }
   };
+
+  // Fetch products based on current filters
+  const fetchProducts = async () => {
+    try {
+      setIsLoading(true);
+
+      const queryParams = new URLSearchParams(location.search);
+      const searchId = queryParams.get('id');
+      setSearchParam(searchId);
+
+      const params = {
+        category: mainCategoryId || undefined,
+        subCategory: subCategoryId || undefined,
+        material: materialFilter !== 'all' ? materialFilter : undefined,
+        shape: shapeFilter !== 'all' ? shapeFilter : undefined,
+        color: colorFilter !== 'all' ? colorFilter : undefined,
+        moq: moqFilter !== 'all' ? moqFilter : undefined,
+        format: formatFilter !== 'all' ? formatFilter : undefined,
+        minPrice: priceFilter.min,
+        maxPrice: priceFilter.max,
+        sort: sortOption,
+        search: searchTerm || searchParam || undefined,
+      };
+
+      // Remove undefined params
+      Object.keys(params).forEach(key => params[key] === undefined && delete params[key]);
+
+      const productsResponse = await axios.get(`${ENV_VAR.API_URL}/products/list`, { params });
+
+      if (mainCategoryId) {
+        // Category view - show products
+        setFilteredItems(productsResponse.data.products || []);
+
+        // Calculate max price for slider
+        const maxPrice = (productsResponse.data.products || []).reduce(
+          (max, item) => Math.max(max, item.price || 0), 0
+        );
+        const roundedMax = Math.ceil(maxPrice / 1000) * 1000 || 10000;
+        // setPriceRange([0, roundedMax]);
+        // setInitialMaxPrice(roundedMax);
+        // // setPriceFilter(prev => ({
+        // //   min: prev.min,
+        // //   max: prev.max === initialMaxPrice ? roundedMax : prev.max
+        // // }));
+      } else {
+        // Catalog view - show categories
+        setProductData(productsResponse.data.catalogData || {});
+      }
+
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      toast.error("Failed to load products");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Fetch filter options (colors, shapes)
+  const fetchFilterOptions = async () => {
+    try {
+      const [colorOptionsResponse, shapeOptionsResponse] = await Promise.all([
+        axios.get(`${ENV_VAR.API_URL}/colors/`),
+        axios.get(`${ENV_VAR.API_URL}/shapes/`)
+      ]);
+      setColorOptions(colorOptionsResponse.data);
+      setShapeOptions(shapeOptionsResponse.data);
+    } catch (error) {
+      console.error("Error fetching filter options:", error);
+    }
+  };
+
+  // Initial load
+  useEffect(() => {
+    const loadInitialData = async () => {
+      resetFilters();
+      await fetchCategories();
+      await fetchFilterOptions();
+      await fetchProducts();
+    };
+    loadInitialData();
+  }, [location.pathname]);
+
+  // Fetch products when filters or categories change
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (mainCategoryId !== null) { // Only fetch if we've loaded categories
+        fetchProducts();
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [
+    mainCategoryId,
+    subCategoryId,
+    searchTerm,
+    priceFilter,
+    materialFilter,
+    sortOption,
+    shapeFilter,
+    colorFilter,
+    moqFilter,
+    formatFilter
+  ]);
 
   const getCategoryTitle = () => {
     if (!activeMainCategory) return 'All Products';
@@ -250,53 +200,6 @@ const CatalogPage = () => {
     );
 
     return subCategory ? subCategory.name : activeSubCategory;
-  };
-
-  const getAvailableMaterials = () => {
-    const materials = new Set();
-    let items = [];
-    console.log(productData);
-
-    if (activeMainCategory) {
-      const mainCategory = categories.find(cat =>
-        cat.name.toLowerCase() === activeMainCategory.toLowerCase()
-      );
-      console.log(mainCategory);
-      if (mainCategory) {
-
-        const categoryProducts = productData[mainCategory._id] || {};
-
-        if (activeSubCategory) {
-          const subCategory = mainCategory.subcategories.find(sub =>
-            // Remove the replace() for more accurate matching
-            sub.name.toLowerCase().replace(/\s+/g, '-') === activeSubCategory.toLowerCase()
-          );
-
-          if (subCategory) {
-            const subCategoryId = subCategory._id;
-            items = categoryProducts[subCategoryId] || [];
-          }
-        } else {
-          // Get all items from all subcategories in this main category
-          items = Object.values(categoryProducts).flat();
-        }
-      }
-    }
-    console.log(items);
-
-    items.forEach(item => {
-      // Only add non-empty materials
-      if (item.material && item.material.trim() !== "") {
-        materials.add(item.material);
-      }
-      // Only add non-empty types
-      if (item.type && item.type.trim() !== "") {
-        materials.add(item.type);
-      }
-    });
-    console.log("Available Materials:", materials);
-
-    return Array.from(materials);
   };
 
   const resetFilters = () => {
@@ -358,7 +261,6 @@ Check out our catalog for more amazing products! 🛍️
 
 ${baseUrl}/catalog/${activeMainCategory}/${subCategory}/`;
 
-
     const isMobile = /iPhone|Android/i.test(navigator.userAgent);
     if (isInquiry) {
       const url = isMobile
@@ -374,6 +276,14 @@ ${baseUrl}/catalog/${activeMainCategory}/${subCategory}/`;
     }
   };
 
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-DarkBlue"></div>
+      </div>
+    );
+  }
 
   return (
     activeMainCategory ? (
@@ -411,13 +321,13 @@ ${baseUrl}/catalog/${activeMainCategory}/${subCategory}/`;
                         <div className='flex gap-2'>
                           <Slider
                             className="w-full"
-                            defaultValue={[100, 500]}
+                            value={priceRange}
+                            onChange={(value) => setPriceRange(value)}
                             formatOptions={{ style: "currency", currency: "inr" }}
                             label="Price Range"
-                            maxValue={1000}
-                            minValue={1}
-                            step={1}
-                            onChange={(value) => setPriceRange(value)}
+                            maxValue={initialMaxPrice}
+                            minValue={0}
+                            step={100}
                           />
                           <button
                             onClick={handlePriceApply}
@@ -457,7 +367,7 @@ ${baseUrl}/catalog/${activeMainCategory}/${subCategory}/`;
                                 className="w-full p-2 border border-gray-300 rounded"
                               >
                                 <option value="all">All Materials</option>
-                                {getAvailableMaterials().map(material => (
+                                {[...new Set(filteredItems.map(item => item.material).filter(Boolean))].map(material => (
                                   <option key={material} value={material}>{material}</option>
                                 ))}
                               </select>
@@ -507,7 +417,6 @@ ${baseUrl}/catalog/${activeMainCategory}/${subCategory}/`;
                               value={formatFilter}
                               onChange={(e) => {
                                 setFormatFilter(e.target.value)
-                                // setShowFilters(false) // Uncomment if you want to close the filter popover after selecting format
                               }}
                               className="w-full p-2 border border-gray-300 rounded"
                             >
@@ -519,7 +428,6 @@ ${baseUrl}/catalog/${activeMainCategory}/${subCategory}/`;
                         )}
                       </div>
                     </div>
-
                   )}
                 </PopoverContent>
               </Popover>
@@ -582,21 +490,18 @@ ${baseUrl}/catalog/${activeMainCategory}/${subCategory}/`;
                         <div className="w-full flex justify-center border-b-1" onClick={() => handleNavigate(item.pdf.short)}>
                           <PdfPreview
                             pdfUrl={item.pdf.url}
-                            hoverInterval={1000}
+                            totalPages={item.pdf.totalPages}
                           />
                         </div>
                       ) : item.video ? (
                         <div className="w-full relative group"
                           onClick={() => window.open(item.video.url, "_blank")}
                         >
-
-                          {/* Video Component */}
                           <HoverVideo
                             videoUrl={item.video.url}
                             posterUrl={item.image?.[0]?.url}
                           />
                         </div>
-
                       ) : (
                         <div className="text-center text-gray-500 p-4">
                           No media available
@@ -624,7 +529,6 @@ ${baseUrl}/catalog/${activeMainCategory}/${subCategory}/`;
                               e.stopPropagation();
                               if (item.pdf) {
                                 try {
-                                  // Add quality parameter for PDF (if supported by your backend)
                                   const response = await fetch(`${item.pdf.url}?fl_attachment&quality=auto`);
                                   const blob = await response.blob();
                                   const url = window.URL.createObjectURL(blob);
@@ -679,10 +583,7 @@ ${baseUrl}/catalog/${activeMainCategory}/${subCategory}/`;
                         >
                           <MdSupportAgent size={16} />
                         </button>
-
-
                       </div>
-
                     </div>
 
                     <div className="p-3">
@@ -709,7 +610,7 @@ ${baseUrl}/catalog/${activeMainCategory}/${subCategory}/`;
             )}
           </div>
         </div>
-      </div >
+      </div>
     ) : (
       <div className="py-10 text-gray-800 px-[8%] mt-3">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">

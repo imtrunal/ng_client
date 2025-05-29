@@ -19,9 +19,7 @@ function Header() {
     const navigate = useNavigate();
     const location = useLocation();
 
-    useEffect(() => {
-        console.log("menuItems", menuItems);
-        
+    useEffect(() => {        
         const scollHandler = window.addEventListener("scroll", (e) => {
             const topPadding = e.target.scrollingElement.scrollTop;
             if (topPadding > 50) {
@@ -160,7 +158,7 @@ function Header() {
 
                             {desktopSubMenuOpen === item.name && (
                                 <div
-                                    className="absolute left-1/2 transform -translate-x-1/2 mt-5 bg-white shadow-xl rounded-xl py-6 px-4 z-20 w-[60vw] max-w-[900px]"
+                                    className="absolute transform -translate-x-1/2 mt-5 bg-white shadow-xl rounded-xl py-6 px-4 z-20 w-[60vw] max-w-[750px]"
                                     onMouseEnter={() => setDesktopSubMenuOpen(item.name)}
                                     onMouseLeave={() => setDesktopSubMenuOpen(null)}
                                 >

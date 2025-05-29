@@ -56,14 +56,13 @@ const PdfViewer = ({ pdfurl = "" }) => {
             <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
                 {loading ? (
                     <div className="flex flex-col items-center justify-center">
-                        {/* <Spinner /> */}
                         <p className="font-bold">Loading File...</p>
                     </div>
                 ) : pdfUrl ? (
                     <Viewer
                         fileUrl={pdfUrl}
                         plugins={[defaultLayoutPluginInstance]}
-                        defaultScale={updateScale()}
+                        defaultScale={"PageWidth"}
                     />
                 ) : (
                     <p className="flex flex-col text-center items-center gap-1">
