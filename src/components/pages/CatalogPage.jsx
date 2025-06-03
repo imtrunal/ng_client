@@ -392,7 +392,7 @@ ${baseUrl}/catalog/${activeMainCategory}/${subCategory}/`;
                           )}
 
                           {/* Color Filter */}
-                          {(activeMainCategory === 'graphics' && ['wedding-cards', 'invitation-card'].includes(activeSubCategory)) && (
+                          {(activeMainCategory === 'graphics' && ['wedding-cards', 'invitation-card'].includes(activeSubCategory)) || (activeMainCategory === 'gifting' && ['gift-cover'].includes(activeSubCategory)) && (
                             <div>
                               <h5 className="mb-2 text-sm font-medium">Color</h5>
                               <select
@@ -592,6 +592,7 @@ ${baseUrl}/catalog/${activeMainCategory}/${subCategory}/`;
                       {item.material && <p className="text-xs text-gray-600">Material: {item.material}</p>}
                       {item.type && <p className="text-xs text-gray-600">Type: {item.type}</p>}
                       {item.moq && <p className="text-xs text-gray-600" title='Minimum Order Quantity'><span className='font-bold'>MOQ:</span> {item.moq}</p>}
+                      {item.description && <p className="text-xs text-gray-600" title='Minimum Order Quantity'>{item.description}</p>}
                     </div>
                   </div>
                 ))}

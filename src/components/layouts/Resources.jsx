@@ -3,23 +3,23 @@ import React from "react";
 const projects = [
     {
         name: "Visiting Card",
-        route: "/catalog/graphics?category=visitingCardTag",
+        route: "/catalog/graphics/visiting-card-&-tag",
     },
     {
         name: "Wedding Card",
-        route: "/catalog/graphics?category=weddingCard",
+        route: "/catalog/graphics/wedding-cards",
     },
     {
         name: "Wedding Box",
-        route: "/catalog/graphics?category=stickerBoxes",
+        route: "/catalog/graphics/wedding-cards",
     },
     {
         name: "Bill Book",
-        route: "/catalog/graphics?category=billBookLetterhead",
+        route: "/catalog/graphics/bill-book-&-letterhead",
     },
     {
         name: "Board Banner",
-        route: "/catalog/graphics?category=boardBanner",
+        route: "/catalog/graphics/board-banner",
     },
 ];
 

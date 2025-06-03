@@ -12,6 +12,7 @@ import RatingPopup from './components/common/RatingPopup';
 import PDFUploadPreview from './components/pages/PreviewPDFPage';
 import PdfViewer from './components/PDFView';
 import LetsTalk from './components/pages/LetsTalk';
+import Invoice from './components/common/Invoice';
 
 function App() {
 
@@ -33,6 +34,7 @@ function App() {
         <Route path="/catalog/*" element={<CatalogPage />} />
         <Route path="/view" element={<PdfViewer />} />
         <Route path="/lets-talk" element={<LetsTalk />} />
+        <Route path="/invoice" element={<Invoice />} />
 
       </Routes>
       {!isLandingPage && <Footer />}

@@ -91,12 +91,10 @@ const Review = ({ close, rated }) => {
             </div>
 
             <div className="flex flex-col gap-6 w-full">
-
                 <div className="w-full text-center">
                     <h3 className="text-lg font-semibold text-gray-700 mb-2">How would you rate our services?</h3>
                     <img src={`/assets/gif/emoji_2_${rating}.gif`} className="w-20 h-20 mx-auto" />
                     <p className="text-gray-600">{selectedText}</p>
-
                     <div className="flex gap-3 justify-center text-4xl my-4">
                         {[1, 2, 3, 4, 5].map((star) => (
                             <span
@@ -109,7 +107,6 @@ const Review = ({ close, rated }) => {
                         ))}
                     </div>
                 </div>
-
                 <div className="w-full">
                     <textarea
                         className="w-full h-36 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none"
@@ -117,7 +114,6 @@ const Review = ({ close, rated }) => {
                         value={review}
                         onChange={(e) => setReview(e.target.value)}
                     ></textarea>
-
                     <div className="flex gap-2 mt-4 flex-col md:flex-row">
                         <button
                             className={`w-full py-2 rounded-md transition ${review === "" || rating === 0 ? 'bg-gray-400 text-white' : 'bg-[#1B3A54] text-white hover:bg-[#19486e]'}`}
@@ -135,10 +131,8 @@ const Review = ({ close, rated }) => {
                         </button>
                     </div>
                 </div>
-
             </div>
         </div>
-
     );
 };
 

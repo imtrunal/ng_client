@@ -7,8 +7,8 @@ const services = [
     icon: <img src="/assets/images/invitation.png" alt="invitation" />
   },
   {
-    title: "Vevai card",
-    description: "A special wedding card crafted to honor and invite the beloved વેવાઈ with love and respect.",
+    title: "Vevai Box",
+    description: "A special wedding card Box crafted to honor and invite the beloved Vevai with love and respect.",
     icon: <img src="/assets/images/love.png" alt="love" />
   },
   {

@@ -24,7 +24,7 @@ const HoverSwiper = ({
     if (resizeTimeoutRef.current) {
       clearTimeout(resizeTimeoutRef.current);
     }
-    
+
     resizeTimeoutRef.current = setTimeout(() => {
       setIsMobile(window.innerWidth <= 768);
     }, 100);
@@ -49,7 +49,7 @@ const HoverSwiper = ({
     const observer = new IntersectionObserver(
       ([entry]) => {
         setIsInView(entry.isIntersecting);
-        
+
         if (entry.isIntersecting) {
           swiperRef.current?.autoplay?.start();
         } else {
