@@ -22,7 +22,7 @@ function App() {
   return (
     <>
       {/* <PDFUploadPreview /> */}
-      {/* <RatingPopup /> */}
+      <RatingPopup />
       <Toaster richColors duration={1500} position='top-right' />
       {!isLandingPage && !isPDFViewPage && <Header />}
 
