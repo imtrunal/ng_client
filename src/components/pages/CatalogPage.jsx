@@ -40,6 +40,7 @@ const CatalogPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [mainCategoryId, setMainCategoryId] = useState(null);
   const [subCategoryId, setSubCategoryId] = useState(null);
+  const [allItems, setAllItems] = useState([]);
 
 
   // Fetch categories and set initial category IDs
@@ -111,6 +112,7 @@ const CatalogPage = () => {
 
       if (mainCategoryId) {
         // Category view - show products
+        setAllItems(productsResponse.data.products || []);
         setFilteredItems(productsResponse.data.products || []);
 
         // Calculate max price for slider
@@ -174,7 +176,7 @@ const CatalogPage = () => {
   }, [
     mainCategoryId,
     subCategoryId,
-    searchTerm,
+    // searchTerm,
     priceFilter,
     materialFilter,
     sortOption,
@@ -183,6 +185,21 @@ const CatalogPage = () => {
     moqFilter,
     formatFilter
   ]);
+
+  useEffect(() => {
+    if (!searchTerm) {
+      // If search is empty, show all items
+      setFilteredItems(allItems);
+      return;
+    }
+
+    // Filter from the complete list (allItems) every time
+    const filtered = allItems.filter(item =>
+      item.title.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredItems(filtered);
+  }, [searchTerm, allItems]);
+
 
   const getCategoryTitle = () => {
     if (!activeMainCategory) return 'All Products';
@@ -212,6 +229,8 @@ const CatalogPage = () => {
     setColorFilter('all');
     setMoqFilter('all');
     setFormatFilter('all');
+    setFilteredItems(allItems); // Reset to show all items
+
   };
 
   const handlePriceApply = () => {
