@@ -313,7 +313,7 @@ ${baseUrl}/catalog/${activeMainCategory}/${subCategory}/`;
                     Filters
                   </button>
                 </PopoverTrigger>
-                <PopoverContent className="min-w-[450px]">
+                <PopoverContent className="min-w-[450px] max-w-[450px]">
                   {showFilters && (
                     <div className="w-full px-4">
                       <div className="w-full rounded-xl  bg-white p-2 flex flex-col gap-4">
@@ -392,7 +392,8 @@ ${baseUrl}/catalog/${activeMainCategory}/${subCategory}/`;
                           )}
 
                           {/* Color Filter */}
-                          {(activeMainCategory === 'graphics' && ['wedding-cards', 'invitation-card'].includes(activeSubCategory)) || (activeMainCategory === 'gifting' && ['gift-cover'].includes(activeSubCategory)) && (
+                          {(activeMainCategory === 'graphics' && ['wedding-cards', 'invitation-card'].includes(activeSubCategory)) ||
+                            (activeMainCategory === 'gifting' && ['gift-cover'].includes(activeSubCategory)) ? (
                             <div>
                               <h5 className="mb-2 text-sm font-medium">Color</h5>
                               <select
@@ -406,7 +407,7 @@ ${baseUrl}/catalog/${activeMainCategory}/${subCategory}/`;
                                 ))}
                               </select>
                             </div>
-                          )}
+                          ) : null}
                         </div>
 
                         {/* Digital Format Filter */}

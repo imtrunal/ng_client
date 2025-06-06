@@ -1,8 +1,21 @@
 import HoverSwiper from "../common/Slider2";
 import { Skeleton } from "@heroui/react";
+import { useMemo } from "react";
 
 export default function PdfSlider({ totalPages, pdfUrl }) {
   const skeletonHeight = "h-96"; // Ensure this matches what's used in HoverSwiper
+
+  // Memoize the image URLs generation to prevent unnecessary recalculations
+  const imageUrls = useMemo(() => {
+    if (!pdfUrl || !totalPages) return [];
+    
+    const baseUrl = pdfUrl.split('/upload/')[0];
+    const filePath = pdfUrl.split('/upload/')[1];
+    
+    return Array.from({ length: totalPages }, (_, i) => {
+      return `${baseUrl}/upload/f_webp,fl_awebp,q_auto/pg_${i + 1}/${filePath}`;
+    });
+  }, [pdfUrl, totalPages]);
 
   if (!pdfUrl || !totalPages) {
     return (
@@ -12,19 +25,14 @@ export default function PdfSlider({ totalPages, pdfUrl }) {
     );
   }
 
-  const imageUrls = Array.from({ length: totalPages }, (_, i) => {
-    const page = i + 1;
-    const transformation = `f_webp,fl_awebp,q_auto/pg_${page}`;
-    return pdfUrl.replace('/upload/', `/upload/${transformation}/`);
-  });
-
   return (
     <HoverSwiper
       slides={imageUrls}
       className="w-full h-full"
       slideClassName="w-full h-full"
       autoplayDelay={1000}
-      skeletonHeight={skeletonHeight} 
+      skeletonHeight={skeletonHeight}
+      lazyLoad={true} // Enable lazy loading if available in HoverSwiper
     />
   );
 }
