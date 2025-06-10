@@ -7,6 +7,7 @@ import "@react-pdf-viewer/default-layout/lib/styles/index.css";
 import { useLocation } from "react-router-dom";
 import { MdDoNotDisturb } from "react-icons/md";
 import { ENV_VAR } from "../utils/envVariables";
+import axios from "axios";
 
 const PdfViewer = ({ pdfurl = "" }) => {
     const [pdfUrl, setPdfUrl] = useState("");
@@ -26,8 +27,8 @@ const PdfViewer = ({ pdfurl = "" }) => {
 
     const getPDF = async () => {
         setLoading(true);
-        const getFullUrl = await fetch(`${ENV_VAR.API_URL}/pdfs/get-url/${pdfurl || queryParams.get('pdf') || location.state?.pdfUrl || JSON.parse(localStorage.getItem("pdfUrl"))}`);
-        const data = await getFullUrl.json();
+        const getFullUrl = await axios.get(`${ENV_VAR.API_URL}/pdfs/get-url/${pdfurl || queryParams.get('pdf') || location.state?.pdfUrl || JSON.parse(localStorage.getItem("pdfUrl"))}`);
+        const data = await getFullUrl.data;
         setPdfUrl(data.data.url);
         setLoading(false);
     }

@@ -2,6 +2,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { iconsByIndex } from "../../utils/data";
 import { ENV_VAR } from "../../utils/envVariables";
+import axios from "axios";
 
 const MenuContext = createContext([]);
 
@@ -13,9 +14,8 @@ export function MenuProvider({ children }) {
     useEffect(() => {
         async function fetchMenuItems() {
             try {
-                const res = await fetch(`${ENV_VAR.API_URL}/category`);
-                if (!res.ok) throw new Error("Failed to fetch categories");
-                const data = await res.json();                
+                const res = await axios.get(`${ENV_VAR.API_URL}/category`);
+                const data = await res.data;                
 
                 const items = data.data.map((category) => {
                     const subcategories = category.subcategories.map((subcat) => {

@@ -25,37 +25,6 @@ export const iconsByIndex = [
   "https://cdn-icons-png.flaticon.com/128/1539/1539338.png",
 ];
 
-// async function fetchMenuItems() {
-//   const res = await fetch("http://localhost:9090/category");
-//   if (!res.ok) throw new Error("Failed to fetch categories");
-//   const data = await res.json();
-
-//   let iconIndex = 0;
-//   const menuItems = data.map(category => {
-//     const subcategories = category.subcategories.map(subcat => {
-//       const icon = iconsByIndex[iconIndex] || "https://cdn-icons-png.flaticon.com/128/565/565547.png";
-//       iconIndex++;
-//       return {
-//         id: category._id,
-//         title: subcat.name,
-//         icon,
-//         route: subcat.name.replace(/\s+/g, "-").toLowerCase(),
-//       };
-//     });
-
-//     return {
-//       name: category.name,
-//       routePath: category.name.toLowerCase(),
-//       subcategories,
-//     };
-//   });
-//   return menuItems;
-// }
-
-// export const menuItems = await fetchMenuItems();
-
-
-
 export const catalog = [
   {
     name: "Visiting Card",

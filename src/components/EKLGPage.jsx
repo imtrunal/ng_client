@@ -14,8 +14,8 @@ const EKLGPage = () => {
             if (!lastWord) return;
 
             try {
-                let response = await fetch(`${ENV_VAR.API_URL}/transliterate?text=${lastWord}`);
-                let data = await response.json();
+                let response = await axios.get(`${ENV_VAR.API_URL}/transliterate?text=${lastWord}`);
+                let data = await response.data;
 
                 if (data.translated) {
                     words[words.length - 1] = data.translated;

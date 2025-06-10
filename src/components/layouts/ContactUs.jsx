@@ -5,6 +5,7 @@ import AttachmentUpload from "../common/AttachmentUpload";
 import { toast } from 'sonner';
 import { useMenu } from "../common/MenuProvider";
 import { ENV_VAR } from "../../utils/envVariables";
+import axios from "axios";
 
 function ContactUs() {
     const [formData, setFormData] = useState({
@@ -122,16 +123,13 @@ function ContactUs() {
         formData.append('attachedFiles', file);
 
         try {
-            const response = await fetch(`${ENV_VAR.API_URL}/upload`, { // Replace with your actual API endpoint
-                method: 'POST',
-                body: formData,
-            });
+            const response = await axios.post(`${ENV_VAR.API_URL}/upload`, formData);
 
-            if (!response.ok) {
+            if (response.status!==200) {
                 throw new Error('Upload failed');
             }
 
-            const data = await response.json();            
+            const data = await response.data;            
             return data.data.url; // Assuming your API returns { url: '...' }
         } catch (error) {
             toast.error("File upload failed. Please try again.");
