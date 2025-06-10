@@ -28,9 +28,7 @@ const PdfViewer = ({ pdfurl = "" }) => {
         setLoading(true);
         const getFullUrl = await fetch(`${ENV_VAR.API_URL}/pdfs/get-url/${pdfurl || queryParams.get('pdf') || location.state?.pdfUrl || JSON.parse(localStorage.getItem("pdfUrl"))}`);
         const data = await getFullUrl.json();
-        console.log("sasas", data);
-
-        setPdfUrl(data.url);
+        setPdfUrl(data.data.url);
         setLoading(false);
     }
 

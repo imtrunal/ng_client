@@ -131,8 +131,8 @@ function ContactUs() {
                 throw new Error('Upload failed');
             }
 
-            const data = await response.json();
-            return data.url; // Assuming your API returns { url: '...' }
+            const data = await response.json();            
+            return data.data.url; // Assuming your API returns { url: '...' }
         } catch (error) {
             toast.error("File upload failed. Please try again.");
             console.error('Upload error:', error);
@@ -180,6 +180,9 @@ ${formData.message}`;
 
         message += `\n\nThank you for your time!  
 I look forward to your response.`;
+
+console.log("sasasasasa",message);
+
 
         const isMobile = /iPhone|Android/i.test(navigator.userAgent);
         const url = isMobile

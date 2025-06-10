@@ -8,7 +8,7 @@ export default function LogoMarquee() {
   const [logos, setLogos] = useState([]);
   const fetchAllCilientLogos = async () => {
     const response = await axios.get(`${ENV_VAR.API_URL}/clients`);
-    setLogos(response.data);
+    setLogos(response.data.data);
   };
   useEffect(() => {
     fetchAllCilientLogos();

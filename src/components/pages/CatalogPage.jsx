@@ -47,13 +47,15 @@ const CatalogPage = () => {
   const fetchCategories = async () => {
     try {
       const categoriesResponse = await axios.get(`${ENV_VAR.API_URL}/category`);
-      setCategories(categoriesResponse.data);
+      const categoryData = categoriesResponse.data;
+      setCategories(categoryData.data);
+
 
       const pathParts = location.pathname.split('/');
       const currentMainCategory = pathParts[2];
       const currentSubCategory = pathParts[3];
       if (currentMainCategory) {
-        const mainCategory = categoriesResponse.data.find(cat =>
+        const mainCategory =categoryData.data.find(cat =>
           cat.name.toLowerCase() === currentMainCategory.toLowerCase()
         );
 
@@ -77,6 +79,8 @@ const CatalogPage = () => {
         }
       }
     } catch (error) {
+      console.log(error);
+
       console.error("Error fetching categories:", error);
       toast.error("Failed to load categories");
     }
@@ -112,11 +116,11 @@ const CatalogPage = () => {
 
       if (mainCategoryId) {
         // Category view - show products
-        setAllItems(productsResponse.data.products || []);
-        setFilteredItems(productsResponse.data.products || []);
+        setAllItems(productsResponse.data.data || []);
+        setFilteredItems(productsResponse.data.data || []);
 
         // Calculate max price for slider
-        const maxPrice = (productsResponse.data.products || []).reduce(
+        const maxPrice = (productsResponse.data.data || []).reduce(
           (max, item) => Math.max(max, item.price || 0), 0
         );
         const roundedMax = Math.ceil(maxPrice / 1000) * 1000 || 10000;
@@ -128,7 +132,7 @@ const CatalogPage = () => {
         // // }));
       } else {
         // Catalog view - show categories
-        setProductData(productsResponse.data.catalogData || {});
+        setProductData(productsResponse.data.data || {});
       }
 
     } catch (error) {
@@ -143,11 +147,11 @@ const CatalogPage = () => {
   const fetchFilterOptions = async () => {
     try {
       const [colorOptionsResponse, shapeOptionsResponse] = await Promise.all([
-        axios.get(`${ENV_VAR.API_URL}/colors/`),
-        axios.get(`${ENV_VAR.API_URL}/shapes/`)
+        axios.get(`${ENV_VAR.API_URL}/colors`),
+        axios.get(`${ENV_VAR.API_URL}/shapes`)
       ]);
-      setColorOptions(colorOptionsResponse.data);
-      setShapeOptions(shapeOptionsResponse.data);
+      setColorOptions(colorOptionsResponse.data.data);
+      setShapeOptions(shapeOptionsResponse.data.data);
     } catch (error) {
       console.error("Error fetching filter options:", error);
     }

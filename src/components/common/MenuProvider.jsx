@@ -17,7 +17,7 @@ export function MenuProvider({ children }) {
                 if (!res.ok) throw new Error("Failed to fetch categories");
                 const data = await res.json();                
 
-                const items = data.map((category) => {
+                const items = data.data.map((category) => {
                     const subcategories = category.subcategories.map((subcat) => {
                         return {
                             id: category._id,
