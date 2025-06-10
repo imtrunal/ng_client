@@ -55,7 +55,7 @@ const CatalogPage = () => {
       const currentMainCategory = pathParts[2];
       const currentSubCategory = pathParts[3];
       if (currentMainCategory) {
-        const mainCategory =categoryData.data.find(cat =>
+        const mainCategory = categoryData.data.find(cat =>
           cat.name.toLowerCase() === currentMainCategory.toLowerCase()
         );
 
@@ -325,7 +325,7 @@ ${baseUrl}/catalog/${activeMainCategory}/${subCategory}/`;
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-1/3 p-2 border border-gray-300 rounded"
               />
-              <Popover className='shadow-lg rounded-2xl' placement="right" isOpen={showFilters} onOpenChange={(open) => setShowFilters(open)}>
+              <Popover className='shadow-lg rounded-2xl' placement={window.innerWidth < 640 ? "bottom" : "right"} isOpen={showFilters} onOpenChange={(open) => setShowFilters(open)}>
                 <PopoverTrigger>
                   <button
                     onClick={() => setShowFilters(!showFilters)}
@@ -336,7 +336,7 @@ ${baseUrl}/catalog/${activeMainCategory}/${subCategory}/`;
                     Filters
                   </button>
                 </PopoverTrigger>
-                <PopoverContent className="min-w-[450px] max-w-[450px]">
+                <PopoverContent className="w-[90vw] max-w-[450px]">
                   {showFilters && (
                     <div className="w-full px-4">
                       <div className="w-full rounded-xl  bg-white p-2 flex flex-col gap-4">
