@@ -553,7 +553,7 @@ ${baseUrl}/catalog/${activeMainCategory}/${subCategory}/`;
                               e.stopPropagation();
                               if (item.pdf) {
                                 try {
-                                  const response = await fetch(`${item.pdf.url}?fl_attachment&quality=auto`);
+                                  const response = await fetch(`${item.pdf.url}?fl_attachment&quality=0`);
                                   const blob = await response.blob();
                                   const url = window.URL.createObjectURL(blob);
                                   const link = document.createElement('a');

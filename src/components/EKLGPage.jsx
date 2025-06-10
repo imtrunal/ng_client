@@ -7,7 +7,9 @@ const EKLGPage = () => {
     const [EKLG17Text, setEKLG17Text] = useState([]);
     // Function to handle transliteration on spacebar press
     const handleKeyPress = async (event) => {
-        if (event.key === " ") {
+        if (event.key === " " || event.key === "Enter") {
+            event.preventDefault(); // Prevents default behavior (e.g., new line on Enter)
+
             let words = uniqueText.trim().split(" ");
             let lastWord = words[words.length - 1];
 
@@ -15,11 +17,12 @@ const EKLGPage = () => {
 
             try {
                 let response = await axios.get(`${ENV_VAR.API_URL}/transliterate?text=${lastWord}`);
-                let data = await response.data;
+                let data = await response.data.data;
+                console.log(data);
 
-                if (data.translated) {
-                    words[words.length - 1] = data.translated;
-                    let updatedText = words.join(" ") + " ";
+                if (data) {
+                    words[words.length - 1] = data;
+                    let updatedText = words.join(" ") + (event.key === " " ? " " : ""); // Add space only if Space was pressed
                     setuniqueText(updatedText);
                 }
             } catch (error) {
@@ -33,7 +36,7 @@ const EKLGPage = () => {
             const response = await axios.post(`${ENV_VAR.API_URL}/eklg17-convert`, {
                 text: uniqueText,
             });
-            setEKLG17Text(response.data.convertedText);
+            setEKLG17Text(response.data.data);
         } catch (error) {
             console.error("Conversion error:", error);
             setEKLG17Text("Conversion failed");
@@ -44,7 +47,7 @@ const EKLGPage = () => {
             const response = await axios.post(`${ENV_VAR.API_URL}/unique-convert`, {
                 text: EKLG17Text,
             });
-            setuniqueText(response.data.convertedText);
+            setuniqueText(response.data.data);
         } catch (error) {
             console.error("Conversion error:", error);
             setuniqueText("Conversion failed");
