@@ -1,33 +1,26 @@
 import { ImQuotesLeft } from "react-icons/im";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, EffectCoverflow } from 'swiper/modules';
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { ENV_VAR } from './../../utils/envVariables';
+import axios from "axios";
 
 function Testimonial() {
     const [activeIndex, setActiveIndex] = useState(0);
+    const [testimonials, setTestimonials] = useState([]);
 
-    const reviews = [
-        {
-            text: "High-quality designs, prompt service, and friendly staff. Highly recommended for all types of invitation cards, videos, and custom festival cards, particularly for businesses.",
-            name: "Ravindra Nakrani",
-        },
-        {
-            text: "I really had a great experience with nirman graphics as they have variety of designs and they also provide good quality and variety of designs!!",
-            name: "Muskan Somani",
-        },
-        {
-            text: "Amazing experience from the work they had done good quality of the product highly professional in ther work and cery poleite behaviour with their customers and affordable prices",
-            name: "ANKUR PAREEK",
-        },
-        {
-            text: "Very Beautiful And All Unic Design 💫💖 It's Nice Performance Nirmanam Shop 🤞🏻🫶🏻",
-            name: "Vishv Katrodiya",
-        },
-        {
-            text: "Best place to Boost your brand with creative products",
-            name: "Akash Borad",
-        },
-    ];
+    const fetchTestimonials = async () => {
+        try {
+            const response = await axios.get(`${ENV_VAR.API_URL}/testimonial/list`);
+            setTestimonials(response.data.data);
+        } catch (error) {
+            console.error('Error fetching testimonials:', error);
+        } 
+    };
+    
+    useEffect(() => {
+        fetchTestimonials();
+    }, [])
 
     return (
         <div className="flex flex-col w-full mt-20 px-5 md:px-[9%] ">
@@ -85,7 +78,7 @@ function Testimonial() {
                                 Autoplay
                             ]}
                         >
-                            {reviews.map((review, index) => (
+                            {testimonials.map((review, index) => (
                                 <SwiperSlide key={index} className="bg-transparent px-5">
                                     {({ isActive }) => (
                                         <div
