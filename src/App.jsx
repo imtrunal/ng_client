@@ -12,6 +12,9 @@ import RatingPopup from './components/common/RatingPopup';
 import PDFUploadPreview from './components/pages/PreviewPDFPage';
 import PdfViewer from './components/PDFView';
 import LetsTalk from './components/pages/LetsTalk';
+import axios from 'axios';
+import { ENV_VAR } from './utils/envVariables';
+import { useEffect } from 'react';
 
 function App() {
 
@@ -19,6 +22,21 @@ function App() {
   const isLandingPage = location.pathname === "/";
   const isPDFViewPage = location.pathname === "/view";
 
+  const trackVisit = async () => {
+    try {
+      await axios.get(`${ENV_VAR.API_URL}/statistics/visit`);
+      localStorage.setItem('hasVisited', 'true');
+    } catch (err) {
+      console.error("Error tracking visit:", err);
+    }
+  };
+  
+  useEffect(() => {
+    const hasVisited = localStorage.getItem('hasVisited');
+    if (!hasVisited) {
+      trackVisit();
+    }
+  }, []);
   return (
     <>
       {/* <PDFUploadPreview /> */}

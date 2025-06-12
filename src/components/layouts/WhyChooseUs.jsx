@@ -8,12 +8,11 @@ function WhyChooseUs() {
     const [banners, setBanners] = useState([]);
     const fetchBanners = async () => {
         try {
-            const response = await axios.get(`${ENV_VAR.API_URL}/banners/list`);
+            const response = await axios.get(`${ENV_VAR.API_URL}/banners`);
             const responseData = response.data;
             const bannerLinks = responseData.data
                 .filter(i => new Date(i.startDate) <= new Date() && new Date(i.endDate) >= new Date())
                 .map(item => item.banner);
-            console.log("Banner Links:", bannerLinks);
             setBanners(bannerLinks);
 
         } catch (error) {

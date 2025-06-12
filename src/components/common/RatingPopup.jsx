@@ -2,8 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Review from '../ReviewPage';
 
 const getRandomDelay = () => {
-    // Random delay between 30s and 60s
-    return Math.floor(Math.random() * (60000 - 30000)) + 30000;
+    return Math.floor(Math.random() * (30 * 60 * 1000 - 10 * 60 * 1000)) + 10 * 60 * 1000;
 };
 
 const RatingPopup = () => {
@@ -17,7 +16,7 @@ const RatingPopup = () => {
 
         const firstTimeout = setTimeout(() => {
             setShowPopup(true);
-        }, 10000); // show after 10s
+        }, 30000); // show after 10s
 
         return () => clearTimeout(firstTimeout);
     }, [hasRated]);

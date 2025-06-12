@@ -112,7 +112,7 @@ const CatalogPage = () => {
       // Remove undefined params
       Object.keys(params).forEach(key => params[key] === undefined && delete params[key]);
 
-      const productsResponse = await axios.get(`${ENV_VAR.API_URL}/products/list`, { params });
+      const productsResponse = await axios.get(`${ENV_VAR.API_URL}/products`, { params });
 
       if (mainCategoryId) {
         // Category view - show products

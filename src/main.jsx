@@ -6,7 +6,7 @@ import { HeroUIProvider } from "@heroui/react";
 import { MenuProvider } from './components/common/MenuProvider.jsx';
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
+  // <StrictMode>
     <MenuProvider>
       <BrowserRouter>
         <HeroUIProvider>
@@ -14,5 +14,5 @@ createRoot(document.getElementById('root')).render(
         </HeroUIProvider>
       </BrowserRouter>
     </MenuProvider>
-  </StrictMode>
+  // </StrictMode>
 )
