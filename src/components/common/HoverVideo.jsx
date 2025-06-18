@@ -185,7 +185,7 @@ const HoverVideo = ({ videoUrl, posterUrl }) => {
 
     return (
         <div
-            className="relative w-full"
+            className="relative w-full min-h-[410px]"
             ref={containerRef}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
