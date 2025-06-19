@@ -499,7 +499,8 @@ ${baseUrl}/catalog/${activeMainCategory}/${subCategory}/`;
           {/* Products Grid */}
           <div>
             {filteredItems.length > 0 ? (
-              <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-5  space-y-4">
+              // <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-5  space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                 {filteredItems.map(item => (
                   <div
                     key={item._id}
