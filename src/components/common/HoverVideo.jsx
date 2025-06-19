@@ -111,6 +111,7 @@
 // export default HoverVideo;
 import React, { useRef, useState, useEffect } from 'react';
 import { BsPlayCircleFill } from "react-icons/bs";
+import { getCloudinaryPublicId } from '../../utils/cloudinary';
 const HoverVideo = ({ videoUrl, posterUrl }) => {
     const videoRef = useRef(null);
     const containerRef = useRef(null);
@@ -193,8 +194,8 @@ const HoverVideo = ({ videoUrl, posterUrl }) => {
         >
             {/* Play Icon Overlay */}
             {!isHovered && !isPlaying && (
-                <div className="bg-black/60 absolute inset-0 text-Orange flex items-center justify-center z-10 transition-opacity duration-300">
-                    <BsPlayCircleFill  size={80} />
+                <div className="bg-black/20 absolute inset-0 text-Orange flex items-center justify-center z-10 transition-opacity duration-300">
+                    <BsPlayCircleFill size={70} />
                 </div>
             )}
 
@@ -214,9 +215,9 @@ const HoverVideo = ({ videoUrl, posterUrl }) => {
             />
 
             {/* Thumbnail Fallback */}
-            {posterUrl && !isHovered && !isPlaying && (
+            {!isHovered && !isPlaying && (
                 <img
-                    src={posterUrl}
+                    src={posterUrl || `https://res.cloudinary.com/dreandu19/video/upload/so_5/${getCloudinaryPublicId(videoUrl)}.jpg`}
                     alt="Video Thumbnail"
                     className="w-full h-auto rounded-lg"
                 />
