@@ -24,7 +24,7 @@ const CatalogPage = () => {
   const [filteredItems, setFilteredItems] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [showFilters, setShowFilters] = useState(false);
-  const [priceFilter, setPriceFilter] = useState({ min: 0, max: 10000 });
+  const [priceFilter, setPriceFilter] = useState({ min: 0, max: 0 });
   const [materialFilter, setMaterialFilter] = useState('all');
   const [sortOption, setSortOption] = useState('featured');
   const [showSort, setShowSort] = useState(false);
@@ -32,8 +32,8 @@ const CatalogPage = () => {
   const [colorFilter, setColorFilter] = useState('all');
   const [moqFilter, setMoqFilter] = useState('all');
   const [formatFilter, setFormatFilter] = useState('all');
-  const [priceRange, setPriceRange] = useState([0, 10000]);
-  const [initialMaxPrice, setInitialMaxPrice] = useState(10000);
+  const [priceRange, setPriceRange] = useState([0, 0]);
+  const [initialMaxPrice, setInitialMaxPrice] = useState(0);
   const [searchParam, setSearchParam] = useState('');
   const [colorOptions, setColorOptions] = useState([]);
   const [shapeOptions, setShapeOptions] = useState([]);
@@ -41,6 +41,7 @@ const CatalogPage = () => {
   const [mainCategoryId, setMainCategoryId] = useState(null);
   const [subCategoryId, setSubCategoryId] = useState(null);
   const [allItems, setAllItems] = useState([]);
+  const [isPriceApply, setIsPriceApply] = useState(false);
 
 
   // Fetch categories and set initial category IDs
@@ -103,8 +104,10 @@ const CatalogPage = () => {
         color: colorFilter !== 'all' ? colorFilter : undefined,
         moq: moqFilter !== 'all' ? moqFilter : undefined,
         format: formatFilter !== 'all' ? formatFilter : undefined,
-        minPrice: priceFilter.min,
-        maxPrice: priceFilter.max,
+        ...(isPriceApply && {
+          minPrice: priceFilter.min,
+          maxPrice: priceFilter.max,
+        }),
         sort: sortOption,
         search: searchTerm || searchParam || undefined,
       };
@@ -122,16 +125,13 @@ const CatalogPage = () => {
         // Calculate max price for slider
         const maxPrice = (productsResponse.data.data || []).reduce(
           (max, item) => Math.max(max, item.price || 0), 0
-        );
-        const roundedMax = Math.ceil(maxPrice / 1000) * 1000 || 10000;
-        // setPriceRange([0, roundedMax]);
-        // setInitialMaxPrice(roundedMax);
-        // // setPriceFilter(prev => ({
-        // //   min: prev.min,
-        // //   max: prev.max === initialMaxPrice ? roundedMax : prev.max
-        // // }));
+        );        
+        const roundedMax = Math.ceil(maxPrice / 1000) * 1000 || 10000;        
+        if (priceFilter.max === 0) {
+          setPriceRange([0, roundedMax]);
+          setInitialMaxPrice(roundedMax);
+        }
       } else {
-        // Catalog view - show categories
         setProductData(productsResponse.data.data || {});
       }
 
@@ -224,8 +224,8 @@ const CatalogPage = () => {
   };
 
   const resetFilters = () => {
-    setPriceFilter({ min: 0, max: initialMaxPrice });
-    setPriceRange([0, initialMaxPrice]);
+    setPriceFilter({ min: 0, max: 0 });
+    setPriceRange([0, 0]);
     setMaterialFilter('all');
     setSearchTerm('');
     setSortOption('featured');
@@ -233,8 +233,8 @@ const CatalogPage = () => {
     setColorFilter('all');
     setMoqFilter('all');
     setFormatFilter('all');
-    setFilteredItems(allItems); // Reset to show all items
-
+    setFilteredItems(allItems);
+    setIsPriceApply(false);
   };
 
   const handlePriceApply = () => {
@@ -242,6 +242,7 @@ const CatalogPage = () => {
       min: priceRange[0],
       max: priceRange[1]
     });
+    setIsPriceApply(true);
     setShowFilters(false);
   }
 
@@ -456,7 +457,7 @@ ${baseUrl}/catalog/${activeMainCategory}/${subCategory}/`;
                 </PopoverContent>
               </Popover>
               {
-                (priceFilter.min !== 0 || priceFilter.max !== initialMaxPrice || materialFilter !== 'all' || searchTerm ||
+                (isPriceApply || materialFilter !== 'all' || searchTerm ||
                   shapeFilter !== 'all' || colorFilter !== 'all' || moqFilter !== 'all' || formatFilter !== 'all') && (
                   <p
                     onClick={resetFilters}
