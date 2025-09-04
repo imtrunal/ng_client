@@ -11,7 +11,7 @@ const projects = [
     },
     {
         name: "Wedding Box",
-        route: "/catalog/graphics/wedding-cards",
+        route: "/catalog/graphics/wedding-box",
     },
     {
         name: "Bill Book",

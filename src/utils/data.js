@@ -36,7 +36,7 @@ export const catalog = [
   },
   {
     name: "Wedding Box",
-    route: "graphics/sticker-&-boxes",
+    route: "graphics/wedding-box",
   },
   {
     name: "Bill Book",
@@ -75,4 +75,3 @@ export const catalog = [
     route: "graphics/bag",
   },
 ];
-
