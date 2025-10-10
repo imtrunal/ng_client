@@ -111,7 +111,6 @@
 // export default HoverVideo;
 import React, { useRef, useState, useEffect } from 'react';
 import { BsPlayCircleFill } from "react-icons/bs";
-import { getCloudinaryPublicId } from '../../utils/cloudinary';
 const HoverVideo = ({ videoUrl, posterUrl }) => {
     const videoRef = useRef(null);
     const containerRef = useRef(null);
@@ -215,9 +214,10 @@ const HoverVideo = ({ videoUrl, posterUrl }) => {
             />
 
             {/* Thumbnail Fallback */}
-            {!isHovered && !isPlaying && (
+            {!isHovered && !isPlaying && posterUrl && (
                 <img
-                    src={posterUrl || `https://res.cloudinary.com/dreandu19/video/upload/so_5/${getCloudinaryPublicId(videoUrl)}.jpg`}
+                    // src={posterUrl || `https://res.cloudinary.com/dreandu19/video/upload/so_5/${getCloudinaryPublicId(videoUrl)}.jpg`}
+                    src={posterUrl}
                     alt="Video Thumbnail"
                     className="w-full h-auto rounded-lg"
                 />

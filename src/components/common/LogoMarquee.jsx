@@ -13,6 +13,8 @@ export default function LogoMarquee() {
   useEffect(() => {
     fetchAllCilientLogos();
   }, [])
+
+  if (logos.length === 0) return null;
   
   return (
     <div className="bg-white py-6 mt-6">
