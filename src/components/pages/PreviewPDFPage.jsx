@@ -8,10 +8,10 @@
 //   // Memoize the image URLs generation to prevent unnecessary recalculations
 //   const imageUrls = useMemo(() => {
 //     if (!pdfUrl || !totalPages) return [];
-    
+
 //     const baseUrl = pdfUrl.split('/upload/')[0];
 //     const filePath = pdfUrl.split('/upload/')[1];
-    
+
 //     return Array.from({ length: totalPages }, (_, i) => {
 //       return `${baseUrl}/upload/f_webp,fl_awebp,q_auto/pg_${i + 1}/${filePath}`;
 //     });
@@ -46,7 +46,7 @@
 
 // export default function PdfSlider({ totalPages, pdfUrl }) {
 //   console.log("pdfurl",pdfUrl,totalPages);
-  
+
 //   const skeletonHeight = "h-96";
 
 //   if (!pdfUrl || !totalPages) {
@@ -80,7 +80,8 @@
 import { useEffect, useState } from "react";
 import HoverSwiper from "../common/Slider2";
 import { Skeleton, Spinner } from "@heroui/react";
-import axios  from 'axios';
+import axios from 'axios';
+import { ENV_VAR } from "../../utils/envVariables";
 
 export default function PdfSlider({ pdfUrl }) {
   const [pageLinks, setPageLinks] = useState([]);
@@ -97,7 +98,7 @@ export default function PdfSlider({ pdfUrl }) {
     const fetchPages = async () => {
       setLoading(true);
       try {
-        const res = await axios.get(`http://localhost:8080/files/pages/${filename}`);
+        const res = await axios.get(`${ENV_VAR.API_URL}/files/pages/${filename}`);
         setPageLinks(res.data.pageLinks || []);
         setTotalPages(res.data.totalPages || 0);
       } catch (err) {
@@ -110,11 +111,13 @@ export default function PdfSlider({ pdfUrl }) {
     fetchPages();
   }, [pdfUrl]);
 
-  if (loading|| pageLinks.length === 0 ) {
+  if (loading || pageLinks.length === 0) {
     return (
       <Skeleton isLoaded={loading} className="rounded-lg w-full">
-        <div className={`${skeletonHeight} rounded-lg bg-default-300`} >
-          <Spinner/>
+        <div
+          className={`${skeletonHeight} rounded-lg bg-default-300 flex items-center justify-center`}
+        >
+          <Spinner />
         </div>
       </Skeleton>
     );

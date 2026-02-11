@@ -2,6 +2,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import './swiper.css'
 import { Autoplay } from 'swiper/modules';
+import { ENV_VAR } from '../../utils/envVariables';
 
 const ImageSlider = ({ images }) => {
     return (
@@ -22,7 +23,7 @@ const ImageSlider = ({ images }) => {
                 {images.map((img, index) => {
                     return (
                         <SwiperSlide key={index}>
-                            <img src={img} alt={`Slide ${index + 1}`} className="w-full object-v shadow-lg px-5" />
+                            <img src={ENV_VAR.API_URL + img} alt={`Slide ${index + 1}`} className="w-full object-v shadow-lg px-5" />
                         </SwiperSlide>
                     )
                 })}

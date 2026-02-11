@@ -151,6 +151,7 @@ import { Autoplay } from "swiper/modules";
 import { Skeleton } from "@heroui/react";
 import "swiper/css";
 import "./swiper.css";
+import { ENV_VAR } from "../../utils/envVariables";
 
 const HoverSwiper = ({
   slides = [],
@@ -231,7 +232,7 @@ const HoverSwiper = ({
 
     return (
       <img
-        src={src}
+        src={ENV_VAR.API_URL+src}
         alt={`Slide ${index + 1}`}
         className="w-full"
         style={{ imageRendering: "crisp-edges" }}

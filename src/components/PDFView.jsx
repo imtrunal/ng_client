@@ -59,7 +59,7 @@ const PdfViewer = ({ pdfurl = "" }) => {
                     </div>
                 ) : pdfUrl ? (
                     <Viewer
-                        fileUrl={pdfUrl}
+                        fileUrl={ENV_VAR.API_URL + pdfUrl}
                         plugins={[defaultLayoutPluginInstance]}
                         defaultScale={"PageWidth"}
                     />

@@ -15,14 +15,14 @@ export default function LogoMarquee() {
   }, [])
 
   if (logos.length === 0) return null;
-  
+
   return (
     <div className="bg-white py-6 mt-6">
       <Marquee gradient={false} speed={50} className="flex items-center">
         {logos.map((logo, index) => (
           <img
             key={index}
-            src={logo.link}
+            src={ENV_VAR.API_URL + logo.link}
             alt={`logo-${index}`}
             className="w-24 md:w-36 mx-5 md:mx-10 filter-none md:grayscale hover:filter-none transition-all"
           />

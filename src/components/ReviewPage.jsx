@@ -59,7 +59,7 @@ const Review = ({ close, rated }) => {
         setLoading(true);
         if (rating === 0) return;
         try {
-            const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+            const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
             const result = await model.generateContent(prompt(rating < 3 ? 3 : rating));
             const response = result.response;
             const text = response.text();

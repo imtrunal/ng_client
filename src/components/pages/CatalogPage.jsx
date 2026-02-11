@@ -109,7 +109,7 @@ const CatalogPage = () => {
           maxPrice: priceFilter.max,
         }),
         sort: sortOption,
-        search: searchTerm || searchParam || undefined,
+        search: searchId || searchTerm || searchParam || undefined,
       };
 
       // Remove undefined params
@@ -125,8 +125,8 @@ const CatalogPage = () => {
         // Calculate max price for slider
         const maxPrice = (productsResponse.data.data || []).reduce(
           (max, item) => Math.max(max, item.price || 0), 0
-        );        
-        const roundedMax = Math.ceil(maxPrice / 1000) * 1000 || 10000;        
+        );
+        const roundedMax = Math.ceil(maxPrice / 1000) * 1000 || 10000;
         if (priceFilter.max === 0) {
           setPriceRange([0, roundedMax]);
           setInitialMaxPrice(roundedMax);
