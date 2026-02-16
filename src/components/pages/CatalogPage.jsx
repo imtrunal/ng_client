@@ -555,7 +555,7 @@ ${baseUrl}/catalog/${activeMainCategory}/${subCategory}/`;
                               e.stopPropagation();
                               if (item.pdf) {
                                 try {
-                                  const response = await fetch(`${item.pdf.url}?fl_attachment&quality=0`);
+                                  const response = await fetch(`${ENV_VAR.API_URL}${item.pdf.url}`);
                                   const blob = await response.blob();
                                   const url = window.URL.createObjectURL(blob);
                                   const link = document.createElement('a');
@@ -574,7 +574,7 @@ ${baseUrl}/catalog/${activeMainCategory}/${subCategory}/`;
                               }
                               else if (item.video) {
                                 try {
-                                  const response = await fetch(`${item.video.url}?fl_attachment`);
+                                  const response = await fetch(`${ENV_VAR.API_URL}${item.video.url}`);
                                   const blob = await response.blob();
                                   const url = window.URL.createObjectURL(blob);
                                   const link = document.createElement('a');
