@@ -225,7 +225,7 @@ console.log("sasasasasa",message);
             <div className="flex flex-col md:flex-row items-center md:items-center gap-5 md:gap-0">
                 <div className="relative w-full md:w-1/2 flex justify-center items-center">
                     <img
-                        className="w-full max-w-md md:max-w-[600px]"
+                        className="w-full max-w-md md:max-w-150px"
                         src="/assets/images/ContactUs.png"
                         alt="Hero Banner"
                     />

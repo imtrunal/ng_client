@@ -20,7 +20,7 @@ function LetsTalk() {
             <img
                 src="/assets/images/letsTalk.jpg"
                 alt="Contact us banner"
-                className="w-full h-[460px] object-cover"
+                className="w-full h-115 object-cover"
             />
         </div>
         <div className="relative px-4 md:px-[3%] py-8 mx-auto max-w-7xl" id="contactUs">
@@ -47,7 +47,7 @@ function LetsTalk() {
                         <div className="flex flex-col lg:flex-row lg:justify-start lg:items-start gap-8">
                             {/* Address */}
                             <div className="flex items-start w-full lg:w-[40%]">
-                                <div className="flex-shrink-0 bg-Orange/10 p-3 rounded-lg">
+                                <div className="shrink-0 bg-Orange/10 p-3 rounded-lg">
                                     <GrLocation className="text-Orange text-2xl" />
                                 </div>
                                 <div className="ml-4">
@@ -60,7 +60,7 @@ function LetsTalk() {
 
                             {/* Phone */}
                             <div className="flex items-start w-full lg:w-auto">
-                                <div className="flex-shrink-0 bg-Orange/10 p-3 rounded-lg">
+                                <div className="shrink-0 bg-Orange/10 p-3 rounded-lg">
                                     <FiPhone className="text-Orange text-2xl" />
                                 </div>
                                 <div className="ml-4">

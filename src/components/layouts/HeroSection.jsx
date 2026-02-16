@@ -4,7 +4,7 @@ import { HiPlayCircle } from "react-icons/hi2";
 
 function HeroSection(params) {
   return (
-    <div className="hero bg-gradient-to-t from-Orange/10 to-white px-4 md:pl-[9%] pb-14 mx-4 mt-10">
+    <div className="hero bg-linear-to-t from-Orange/10 to-white px-4 md:pl-[9%] pb-14 mx-4 mt-10">
       <div className="flex flex-col md:flex-row items-center justify-between gap-10 md:gap-0">
 
         <div className="flex flex-col gap-8 max-w-xl w-full md:pr-10 text-center md:text-left">
@@ -40,7 +40,7 @@ function HeroSection(params) {
           </div>
         </div>
 
-        <div className="relative w-full max-w-md md:max-w-[570px] -mt-10 md:-mt-16 mx-auto md:mx-0">
+        <div className="relative w-full max-w-md md:max-w-142.5 -mt-10 md:-mt-16 mx-auto md:mx-0">
           <img
             className="w-full"
             src="/assets/images/Group 2050 1.svg"

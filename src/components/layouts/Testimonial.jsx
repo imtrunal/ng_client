@@ -89,11 +89,11 @@ function Testimonial() {
                                                 <ImQuotesLeft color="#F18B35" size={30} />
                                                 <p className="text-sm md:text-base">{review.text}</p>
                                                 <div className="flex items-center gap-4 mt-5">
-                                                    <p className="w-10 h-10 md:w-12 md:h-12 bg-Orange rounded-full flex justify-center items-center text-lg md:text-xl font-bold text-[#1B3A54]">
+                                                    <p className="w-10 h-10 md:w-12 md:h-12 bg-Orange rounded-full flex justify-center items-center text-lg md:text-xl font-bold text-DarkBlue">
                                                         {review.name.charAt(0).toUpperCase()}
                                                     </p>
                                                     <div className="flex flex-col gap-1">
-                                                        <h1 className="text-base md:text-lg font-bold text-[#1B3A54]">
+                                                        <h1 className="text-base md:text-lg font-bold text-DarkBlue">
                                                             {review.name}
                                                         </h1>
                                                     </div>

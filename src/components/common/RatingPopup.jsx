@@ -45,7 +45,7 @@ const RatingPopup = () => {
     return (
         <>
             {showPopup && (
-                <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center z-[100]">
+                <div className="fixed top-0 left-0 w-full h-full bg-black/50 bg-opacity-50 flex items-center justify-center z-100 overscroll-none">
                     <Review close={handleClose} rated={handleRating} />
                 </div>
             )}

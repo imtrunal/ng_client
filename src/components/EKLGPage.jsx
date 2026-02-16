@@ -68,7 +68,7 @@ const EKLGPage = () => {
                         <span className="font-semibold">Text</span>
                     </div>
                     <textarea
-                        className="w-full h-[450px] p-3 border rounded-b-lg focus:outline-none text-lg resize-none"
+                        className="w-full h-112.5 p-3 border rounded-b-lg focus:outline-none text-lg resize-none"
                         placeholder="Type here..."
                         value={uniqueText}
                         onChange={(e) => setuniqueText(e.target.value)}
@@ -100,7 +100,7 @@ const EKLGPage = () => {
                         <span className="font-semibold">Text</span>
                     </div>
                     <textarea
-                        className="w-full h-[450px] p-3 border rounded-b-lg focus:outline-none text-lg resize-none"
+                        className="w-full h-112.5 p-3 border rounded-b-lg focus:outline-none text-lg resize-none"
                         placeholder="Type here..."
                         value={EKLG17Text}
                         onChange={(e) => setEKLG17Text(e.target.value)}

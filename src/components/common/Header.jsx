@@ -114,7 +114,7 @@ function Header() {
     };
 
     return (
-        <nav className={`sticky top-0 flex items-center justify-between px-4 sm:px-6 lg:px-[10%] z-50 p-2 transition-all ${scrolled ? "shadow-md mx-10 bg-white/80 backdrop-blur-[4px]  top-6 rounded-2xl" : ""}`}>
+        <nav className={`sticky top-0 flex items-center justify-between px-4 sm:px-6 lg:px-[10%] z-50 p-2 transition-all ${scrolled ? "shadow-md mx-10 bg-white/80 backdrop-blur-xs  top-6 rounded-2xl" : ""}`}>
             {/* Logo */}
             <div className="text-xl font-semibold">
                 <img
@@ -130,7 +130,7 @@ function Header() {
 
             {/* Desktop Menu */}
             <div className="hidden md:flex items-center gap-5">
-                <ul className="flex space-x-6 lg:space-x-10 text-sm md:text-md text-[#1B3A54] font-medium">
+                <ul className="flex space-x-6 lg:space-x-10 text-sm md:text-md text-DarkBlue font-medium">
                     <li>
                         <a
                             onClick={() => {
@@ -158,7 +158,7 @@ function Header() {
 
                             {desktopSubMenuOpen === item.name && (
                                 <div
-                                    className="absolute transform -translate-x-1/2 mt-5 bg-white shadow-xl rounded-xl py-6 px-4 z-20 w-[60vw] max-w-[750px]"
+                                    className="absolute transform -translate-x-1/2 mt-5 bg-white shadow-xl rounded-xl py-6 px-4 z-20 w-[60vw] max-w-187.5"
                                     onMouseEnter={() => setDesktopSubMenuOpen(item.name)}
                                     onMouseLeave={() => setDesktopSubMenuOpen(null)}
                                 >
@@ -169,7 +169,7 @@ function Header() {
                                                 key={index}
                                                 className={`shadow cursor-pointer flex items-center space-x-1 p-3 rounded-lg transition-colors duration-200 ${isActiveRoute(item.routePath, category.route) ? 'bg-Orange/20' : 'hover:bg-Orange/20'}`}
                                             >
-                                                <div className="text-blue-600 p-2 rounded-md flex-shrink-0">
+                                                <div className="text-blue-600 p-2 rounded-md shrink-0">
                                                     <img src={category.icon} className="w-6" alt="" />
                                                 </div>
                                                 <h4 className="font-semibold">{category.title}</h4>
@@ -224,7 +224,7 @@ function Header() {
 
             {/* Mobile Menu */}
             {isOpen && (
-                <div className="absolute top-full left-0 w-full bg-white shadow-md p-4 z-10 md:hidden flex flex-col items-center gap-4 text-[#1B3A54] font-medium">
+                <div className="absolute top-full left-0 w-full bg-white shadow-md p-4 z-10 md:hidden flex flex-col items-center gap-4 text-DarkBlue] font-medium">
                     <ul className="space-y-3 text-center w-full">
                         <li>
                             <a
@@ -249,7 +249,7 @@ function Header() {
 
                                 {mobileSubMenuOpen === menu.name && (
                                     <div className="mt-1 w-full bg-white divide-y divide-gray-100 rounded-lg">
-                                        <ul className="py-2 text-sm text-[#1B3A54]">
+                                        <ul className="py-2 text-sm text-DarkBlue">
                                             {menu.subcategories.map((item, index) => (
                                                 <li key={index}>
                                                     <a

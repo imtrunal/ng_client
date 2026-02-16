@@ -35,7 +35,7 @@ const Resources = () => {
                         <img
                             src={`/assets/images/Resourse Photo/r${index + 1}.png`}
                             alt={project.name}
-                            className="w-full h-auto max-h-48 object-cover md:max-h-[300px] sm:max-h-[200px]"
+                            className="w-full h-auto max-h-48 object-cover md:max-h-75 sm:max-h-50"
                         />
                     </a>
                 ))}

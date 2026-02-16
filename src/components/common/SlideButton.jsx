@@ -21,7 +21,7 @@ const RocketLaunchButton = () => {
       <img
         src="/assets/images/caret_2.png"
         alt="rocket"
-        className="absolute w-16 h-16 z-20 left-0 bottom-0 transform transition-transform duration-1000 ease-linear group-hover:translate-x-[220px]"
+        className="absolute w-16 h-16 z-20 left-0 bottom-0 transform transition-transform duration-1000 ease-linear group-hover:translate-x-55"
       />
     </a>
   );

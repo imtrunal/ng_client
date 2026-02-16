@@ -337,7 +337,7 @@ ${baseUrl}/catalog/${activeMainCategory}/${subCategory}/`;
                     Filters
                   </button>
                 </PopoverTrigger>
-                <PopoverContent className="w-[90vw] max-w-[450px]">
+                <PopoverContent className="w-[90vw] max-w-112.5 bg-white rounded-xl">
                   {showFilters && (
                     <div className="w-full px-4">
                       <div className="w-full rounded-xl  bg-white p-2 flex flex-col gap-4">
@@ -475,7 +475,7 @@ ${baseUrl}/catalog/${activeMainCategory}/${subCategory}/`;
                     <IoFilterSharp size={20} />
                   </button>
                 </PopoverTrigger>
-                <PopoverContent className="min-w-[250px] p-4 shadow-lg rounded-2xl z-50 ">
+                <PopoverContent className="min-w-62.5 p-4 shadow-lg rounded-2xl z-50 ">
                   {[
                     { label: "Featured", value: "featured" },
                     { label: "Price: Low to High", value: "price-low" },
@@ -513,7 +513,7 @@ ${baseUrl}/catalog/${activeMainCategory}/${subCategory}/`;
                           <HoverSwiper slides={item.image.map(img => img.url)} />
                         </div>
                       ) : item.pdf ? (
-                        <div className="w-full flex justify-center border-b-1" onClick={() => handleNavigate(item.pdf.short)}>
+                        <div className="w-full flex justify-center border-b" onClick={() => handleNavigate(item.pdf.short)}>
                           <PdfPreview
                             pdfUrl={item.pdf.url}
                             totalPages={item.pdf.totalPages}
@@ -650,7 +650,7 @@ ${baseUrl}/catalog/${activeMainCategory}/${subCategory}/`;
               <img
                 src={`/assets/images/Resourse Photo/r${index + 1}.png`}
                 alt={category.name}
-                className="w-full h-auto max-h-48 object-cover md:max-h-[300px] sm:max-h-[200px]"
+                className="w-full h-auto max-h-48 object-cover md:max-h-75 sm:max-h-50"
               />
             </a>
           ))}

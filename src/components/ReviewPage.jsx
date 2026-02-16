@@ -75,9 +75,9 @@ const Review = ({ close, rated }) => {
 
     return (
         // <div className="w-full bg-[#1B3A54] flex min-h-max justify-center px-4 sm:px-8 md:px-12 lg:px-16">
-        <div className="relative w-10/12 sm:w-8/12 md:w-6/12 lg:w-4/12 max-w-screen-xl bg-white shadow-lg rounded-lg p-6 md:p-8 flex flex-col gap-6">
+        <div className="relative w-10/12 sm:w-8/12 md:w-6/12 lg:w-4/12 max-w-7xl bg-white shadow-lg rounded-lg p-6 md:p-8 flex flex-col gap-6">
 
-            <button className="absolute top-2 right-2" onClick={close}>
+            <button className="absolute top-2 right-2 cursor-pointer" onClick={close}>
                 <MdClose fontSize={20} />
             </button>
 
@@ -116,14 +116,14 @@ const Review = ({ close, rated }) => {
                     ></textarea>
                     <div className="flex gap-2 mt-4 flex-col md:flex-row">
                         <button
-                            className={`w-full py-2 rounded-md transition ${review === "" || rating === 0 ? 'bg-gray-400 text-white' : 'bg-[#1B3A54] text-white hover:bg-[#19486e]'}`}
+                            className={`w-full py-2 rounded-md transition ${review === "" || rating === 0 ? 'bg-gray-400 text-white' : 'bg-DarkBlue text-white hover:bg-[#19486e]'}`}
                             onClick={handleSubmit}
                             disabled={review === "" || rating === 0}
                         >
                             Send Google Review
                         </button>
                         <button
-                            className={`w-full py-2 rounded-md transition ${rating === 0 ? 'bg-gray-400 text-white' : 'bg-[#1B3A54] text-white hover:bg-[#19486e]'}`}
+                            className={`w-full py-2 rounded-md transition ${rating === 0 ? 'bg-gray-400 text-white' : 'bg-DarkBlue text-white hover:bg-[#19486e]'}`}
                             onClick={generateReview}
                             disabled={rating === 0}
                         >
